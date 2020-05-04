@@ -1,0 +1,19 @@
+﻿  MyForm.cpp
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\base.h(13): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\base.h(18): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\inventarycontroller.h(25): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\personaje.h(16): warning C4244: '=': conversión de 'int' a 'float'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\personaje.h(17): warning C4244: '=': conversión de 'int' a 'float'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\personaje.h(67): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\personaje.h(68): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\personaje.h(73): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\item.h(19): warning C4244: '=': conversión de 'int' a 'float'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\item.h(20): warning C4244: '=': conversión de 'int' a 'float'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\item.h(51): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\item.h(52): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\item.h(66): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\escena.h(18): warning C4244: '=': conversión de 'int' a 'float'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\escena.h(19): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\diego alonso\desktop\visual studio\ciclo 3\tp_algoritmos\tp_algoritmos\myform.h(151): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+  MyForm.obj : se encontró un módulo MSIL; vinculación incremental deshabilitada para MSIL; ejecutando vínculo completo
+  TP_Algoritmos.vcxproj -> C:\Users\Diego Alonso\Desktop\VISUAL STUDIO\CICLO 3\TP_Algoritmos\Debug\TP_Algoritmos.exe
