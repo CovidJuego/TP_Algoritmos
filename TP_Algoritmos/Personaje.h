@@ -9,9 +9,11 @@ private:
 	int i_x, i_y;
 
 public:
+	//Atributos publicos
 	bool arr, aba, izq, der;
 	InventaryController *inventary;
-	Personaje(Bitmap^ sprite, Control::ControlCollection^ controls, Graphics ^g) : Base(2000, 500, 30, 30) { 
+
+	Personaje(Bitmap^ sprite, Control::ControlCollection^ controls, Graphics ^g) : Base(/*200*/0, /*50*/0, 30, 30) { 
 		//Dimesiones
 		this->newAncho = sprite->Width / 9;
 		this->newAlto = sprite->Height / 4;
@@ -29,7 +31,7 @@ public:
 		inventary = new InventaryController();
 		inventary->CrearInventario(g, controls);
 	}
-	~Personaje(){}
+	~Personaje() { delete inventary; }
 
 	void Update(Graphics ^g, Bitmap^ sprite) {
 		Movimiento(g);
@@ -71,7 +73,7 @@ public:
 		g->DrawImage(Sprite, Dibujo, Region, GraphicsUnit::Pixel);
 	}
 	Rectangle rect(Graphics^g) {
-		return Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2), g->VisibleClipBounds.Bottom / 2, ancho, alto);
+		return Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2), g->VisibleClipBounds.Bottom / 2 - (alto / 2), ancho, alto);
 	}
 
 };

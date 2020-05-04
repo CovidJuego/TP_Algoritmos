@@ -2,6 +2,7 @@
 #include "Personaje.h"
 #include "Item.h"
 #include "Escena.h"
+#include "Vehiculo.h"
 
 namespace TPAlgoritmos {
 
@@ -37,6 +38,13 @@ namespace TPAlgoritmos {
 			if (components)
 			{
 				delete components;
+				delete sprites;
+				delete steph;
+				delete mapa;
+				delete inventaryButtons;
+				delete g;
+				delete buffer;
+				delete context;
 			}
 		}
 
@@ -68,6 +76,7 @@ namespace TPAlgoritmos {
 			 Item *item;
 			 Item *item2;
 			 Escena *mapa;
+			 Vehiculo *moto;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -120,12 +129,13 @@ namespace TPAlgoritmos {
 			buffer = context->Allocate(g, ClientRectangle);
 			
 			//Sprites
-			sprites = gcnew array<Bitmap^>(4);
+			sprites = gcnew array<Bitmap^>(5);
 
 			sprites[0] = gcnew Bitmap("ChocolateCity.jpg");
 			sprites[1] = gcnew Bitmap("StephMarlonso.png");
 			sprites[2] = gcnew Bitmap("ImagenTemp1.png");
 			sprites[3] = gcnew Bitmap("ImagenTemp2.png");
+			sprites[4] = gcnew Bitmap("Moto.jpeg");
 
 			//GameObjects
 			inventaryButtons = gcnew array<Button^>(4);
@@ -134,6 +144,7 @@ namespace TPAlgoritmos {
 			item = new Item(steph);
 			item2 = new Item(steph, 100, 200);
 			mapa = new Escena();
+			moto = new Vehiculo(sprites[4]);
 
 			for (int i = 0; i < steph->inventary->getEspacios(); i++) {
 				inventaryButtons[i] = (Button^)Controls->Find("button" + i, false)[0];
@@ -153,14 +164,19 @@ namespace TPAlgoritmos {
 		item->Update(buffer->Graphics, sprites[2], steph, interaction_txt, "Pulse [E] para obtener Circulo");
 		item2->Update(buffer->Graphics, sprites[3], steph, interaction_txt, "Pulse [E] para obtener Cuadrado");
 		steph->Update(buffer->Graphics, sprites[1]);
+		moto->Update(buffer->Graphics, sprites[4], steph);
 
 		item->DibujarRectangulo(buffer->Graphics);
 		item2->DibujarRectangulo(buffer->Graphics);
-		steph->DibujarRectangulo(buffer->Graphics);
+		steph->DibujarRectangulo2(buffer->Graphics);
+		
 
 
 		Console::SetCursorPosition(0, 0); cout << "Mapa: " << mapa->getX() << " / " << mapa->getY();
 		Console::SetCursorPosition(0, 2); cout << "Personaje: " << steph->getX() << " / " << steph->getY();
+
+		Console::SetCursorPosition(0, 3); cout << "Circulo: " << item->getX() << " / " << item->getY();
+		Console::SetCursorPosition(0, 4); cout << "Circulo / en form: " << item->posXprint << " / " << item->posYprint;
 
 		buffer->Render(g);
 	}
