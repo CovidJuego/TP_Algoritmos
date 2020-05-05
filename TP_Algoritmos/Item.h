@@ -14,7 +14,6 @@ private:
 	
 
 public:
-	float posXprint, posYprint;
 	Item(Base *otro, int x = 0, int y = 0) : Base() {
 		this->x = x;
 		this->y = y;
@@ -81,8 +80,6 @@ public:
 			c->Text = "";
 		}
 	}
-
-	Rectangle rect() { return Rectangle(posXprint, posYprint, ancho, alto); }
 	void setShow(bool a) { show = a; }
 	void setEstado(Estado e) { estado = e; }
 	Estado getEstado() { return estado; }

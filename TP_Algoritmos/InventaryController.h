@@ -26,7 +26,7 @@ public:
 			inventarySpace[i]->Name = "button"+i;
 			inventarySpace[i]->Size = System::Drawing::Size(50, 50);
 			inventarySpace[i]->Text = "";
-			inventarySpace[i]->UseVisualStyleBackColor = true;
+			inventarySpace[i]->BackColor = System::Drawing::Color::FromArgb(150, Color::Green);
 			control->Add(inventarySpace[i]);
 		}
 	}

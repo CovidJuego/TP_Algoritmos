@@ -6,11 +6,11 @@ class Personaje : public Base
 {
 private:
 	float speed;
-	int i_x, i_y;
+	float posItemX, posItemY;
 
 public:
 	//Atributos publicos
-	bool arr, aba, izq, der;
+	bool arr, aba, izq, der, enVehiculo;
 	InventaryController *inventary;
 
 	Personaje(Bitmap^ sprite, Control::ControlCollection^ controls, Graphics ^g) : Base(/*200*/0, /*50*/0, 30, 30) { 
@@ -21,7 +21,7 @@ public:
 		this->alto = newAlto;		//alto del zoom de la imagen
 
 		//Movimiento
-		arr = aba = izq = der = false;
+		arr = aba = izq = der = enVehiculo = false;
 		speed = 20;
 
 		//Region inicial del Sprite
@@ -57,7 +57,7 @@ public:
 			i_y = 0;
 		}
 		i_x++; i_x %= 9;
-		if (!(izq || der || aba || arr)) {
+		if ((!(izq || der || aba || arr)) || enVehiculo) {
 			this->dx = 0; this->dy = 0;
 			i_x = 0; i_y = 2;
 		}
@@ -75,5 +75,6 @@ public:
 	Rectangle rect(Graphics^g) {
 		return Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2), g->VisibleClipBounds.Bottom / 2 - (alto / 2), ancho, alto);
 	}
-
+	float getAncho() { return ancho; }
+	float getAlto() { return alto; }
 };
