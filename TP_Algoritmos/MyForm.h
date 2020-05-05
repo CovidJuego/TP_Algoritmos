@@ -2,7 +2,8 @@
 #include "Personaje.h"
 #include "Item.h"
 #include "Escena.h"
-
+#include<time.h>
+#include "Enemigo.h"
 namespace TPAlgoritmos {
 
 	using namespace System;
@@ -26,6 +27,8 @@ namespace TPAlgoritmos {
 			//TODO: agregar código de constructor aquí
 			//
 			Start();
+			contador = new int;
+			*contador = 0;
 		}
 
 	protected:
@@ -58,17 +61,19 @@ namespace TPAlgoritmos {
 			 Graphics ^g;
 			 BufferedGraphics ^buffer;
 			 BufferedGraphicsContext ^context;
-
+			 
 			 //Sprites
 			 array<Bitmap^> ^sprites;
-			 
 			 array<Button^>^inventaryButtons;
-
+			 Bitmap ^ poli;
 			 Personaje *steph;
+			 Enemigo * policia;
 			 Item *item;
 			 Item *item2;
 			 Escena *mapa;
-
+			 //Variables Especiales
+			 int * contador;//Contador para reedifinir la direccion de los enemigos
+			 
 #pragma region Windows Form Designer generated code
 		/// <summary>
 		/// Método necesario para admitir el Diseñador. No se puede modificar
@@ -120,13 +125,13 @@ namespace TPAlgoritmos {
 			buffer = context->Allocate(g, ClientRectangle);
 			
 			//Sprites
-			sprites = gcnew array<Bitmap^>(4);
+			sprites = gcnew array<Bitmap^>(5);
 
 			sprites[0] = gcnew Bitmap("ChocolateCity.jpg");
 			sprites[1] = gcnew Bitmap("StephMarlonso.png");
 			sprites[2] = gcnew Bitmap("ImagenTemp1.png");
 			sprites[3] = gcnew Bitmap("ImagenTemp2.png");
-
+			sprites[4] = gcnew System::Drawing::Bitmap("policia.png");
 			//GameObjects
 			inventaryButtons = gcnew array<Button^>(4);
 
@@ -134,7 +139,8 @@ namespace TPAlgoritmos {
 			item = new Item(steph);
 			item2 = new Item(steph, 100, 200);
 			mapa = new Escena();
-
+			policia = new Enemigo(sprites[4],g,1);
+			//Inventario
 			for (int i = 0; i < steph->inventary->getEspacios(); i++) {
 				inventaryButtons[i] = (Button^)Controls->Find("button" + i, false)[0];
 				inventaryButtons[i]->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
@@ -153,15 +159,37 @@ namespace TPAlgoritmos {
 		item->Update(buffer->Graphics, sprites[2], steph, interaction_txt, "Pulse [E] para obtener Circulo");
 		item2->Update(buffer->Graphics, sprites[3], steph, interaction_txt, "Pulse [E] para obtener Cuadrado");
 		steph->Update(buffer->Graphics, sprites[1]);
+		policia->Update(buffer->Graphics, sprites[4]);
 
 		item->DibujarRectangulo(buffer->Graphics);
 		item2->DibujarRectangulo(buffer->Graphics);
 		steph->DibujarRectangulo(buffer->Graphics);
 
-
 		Console::SetCursorPosition(0, 0); cout << "Mapa: " << mapa->getX() << " / " << mapa->getY();
 		Console::SetCursorPosition(0, 2); cout << "Personaje: " << steph->getX() << " / " << steph->getY();
-
+		/*FUNCION QUE DETERMINA ALEATORIDAD DE LOS ENEMIGOS*/
+		if (*contador == 10) {
+			srand(time(NULL));
+			Random r;
+			int direccion = r.Next(1, 4);
+			Console::SetCursorPosition(7, 8); cout << "Direccion: " << direccion;
+			policia->reiniciarDirecciones();
+			if (direccion == 1) {
+				policia->arr = true;
+			}
+			else if(direccion == 2) {
+				policia->der = true;
+			}
+			else if (direccion == 3) {
+				policia->izq = true;
+			}
+			else {
+				policia->aba = true;
+			}
+			*contador = 0;
+		}
+		//Console::SetCursorPosition(7, 4); cout << "Contador: " << *contador;
+		*contador+=1;
 		buffer->Render(g);
 	}
 	private: System::Void MyForm_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
