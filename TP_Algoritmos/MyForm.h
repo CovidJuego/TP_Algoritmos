@@ -4,7 +4,6 @@
 #include "Escena.h"
 #include<time.h>
 #include "Enemigo.h"
-#include "Vehiculo.h"
 namespace TPAlgoritmos {
 
 	using namespace System;
@@ -41,13 +40,6 @@ namespace TPAlgoritmos {
 			if (components)
 			{
 				delete components;
-				delete sprites;
-				delete steph;
-				delete mapa;
-				delete inventaryButtons;
-				delete g;
-				delete buffer;
-				delete context;
 			}
 		}
 
@@ -82,8 +74,6 @@ namespace TPAlgoritmos {
 			 //Variables Especiales
 			 int * contador;//Contador para reedifinir la direccion de los enemigos
 			 
-			 Vehiculo *moto;
-
 #pragma region Windows Form Designer generated code
 		/// <summary>
 		/// Método necesario para admitir el Diseñador. No se puede modificar
@@ -142,7 +132,6 @@ namespace TPAlgoritmos {
 			sprites[2] = gcnew Bitmap("ImagenTemp1.png");
 			sprites[3] = gcnew Bitmap("ImagenTemp2.png");
 			sprites[4] = gcnew System::Drawing::Bitmap("policia.png");
-			sprites[5] = gcnew Bitmap("Moto.jpeg");
 			//GameObjects
 			inventaryButtons = gcnew array<Button^>(4);
 
@@ -152,7 +141,6 @@ namespace TPAlgoritmos {
 			mapa = new Escena();
 			policia = new Enemigo(sprites[4],g,1);
 			//Inventario
-			moto = new Vehiculo(sprites[5]);
 			for (int i = 0; i < steph->inventary->getEspacios(); i++) {
 				inventaryButtons[i] = (Button^)Controls->Find("button" + i, false)[0];
 				inventaryButtons[i]->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
@@ -172,12 +160,10 @@ namespace TPAlgoritmos {
 		item2->Update(buffer->Graphics, sprites[3], steph, interaction_txt, "Pulse [E] para obtener Cuadrado");
 		steph->Update(buffer->Graphics, sprites[1]);
 		policia->Update(buffer->Graphics, sprites[4]);
-		moto->Update(buffer->Graphics, sprites[5], steph);
 
 		item->DibujarRectangulo(buffer->Graphics);
 		item2->DibujarRectangulo(buffer->Graphics);
-		steph->DibujarRectangulo2(buffer->Graphics);
-		
+		steph->DibujarRectangulo(buffer->Graphics);
 
 		Console::SetCursorPosition(0, 0); cout << "Mapa: " << mapa->getX() << " / " << mapa->getY();
 		Console::SetCursorPosition(0, 2); cout << "Personaje: " << steph->getX() << " / " << steph->getY();
@@ -204,10 +190,6 @@ namespace TPAlgoritmos {
 		}
 		//Console::SetCursorPosition(7, 4); cout << "Contador: " << *contador;
 		*contador+=1;
-
-		Console::SetCursorPosition(0, 3); cout << "Circulo: " << item->getX() << " / " << item->getY();
-		Console::SetCursorPosition(0, 4); cout << "Circulo / en form: " << item->posXprint << " / " << item->posYprint;
-
 		buffer->Render(g);
 	}
 	private: System::Void MyForm_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {

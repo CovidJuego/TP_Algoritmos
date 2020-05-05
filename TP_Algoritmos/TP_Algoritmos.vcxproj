@@ -143,7 +143,6 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Personaje.h" />
-    <ClInclude Include="Vehiculo.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MyForm.resx">
