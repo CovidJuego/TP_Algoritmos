@@ -4,6 +4,7 @@ class Enemigo : Base{
 private:
 	double speed;
 	int i_x, i_y;
+	bool alerta;
 public:
 	bool arr, aba, izq, der;
 	Enemigo(Bitmap^ sprite,  Graphics ^g,int tipo) : Base(50, 50, 22, 31) {
@@ -21,6 +22,9 @@ public:
 		//Region inicial del Sprite
 		i_x = 0;
 		i_y = 2;
+
+		//Estado del enemigo
+		alerta = false;
 	}
 	~Enemigo() {}
 
@@ -35,21 +39,42 @@ public:
 
 	void Movimiento(Graphics ^g) {
 		//Teclas
+		cout << "Y" << y << " +DY: " << dy << " < " << g->VisibleClipBounds.Top;
 		if (izq) {
-			this->dx = -speed; this->dy = 0;
-			i_y = 3;
+			if (x + dx > g->VisibleClipBounds.Left) {
+				this->dx = -speed; this->dy = 0;
+				i_y = 3;
+			}
+			else {
+				izq = false; der = true;
+			}
 		}
 		if (der) {
-			this->dx = speed; this->dy = 0;
-			i_y = 1;
+			if (x + dx < g->VisibleClipBounds.Right) {
+				this->dx = speed; this->dy = 0;
+				i_y = 1;
+			}
+			else {
+				der = false; izq = true;
+			}
 		}
 		if (aba) {
-			this->dx = 0; this->dy = speed;
-			i_y = 2;
+			if (y + dy < g->VisibleClipBounds.Bottom) {
+				this->dx = 0; this->dy = speed;
+				i_y = 2;
+			}
+			else {
+				aba = false; arr = true;
+			}
 		}
 		if (arr) {
-			this->dx = 0; this->dy = -speed;
-			i_y = 0;
+			if (y + dy > g->VisibleClipBounds.Top) {
+				this->dx = 0; this->dy = -speed;
+				i_y = 0;
+			}
+			else {
+				arr = false; aba = true;
+			}
 		}
 		i_x++; i_x %= 3;
 
