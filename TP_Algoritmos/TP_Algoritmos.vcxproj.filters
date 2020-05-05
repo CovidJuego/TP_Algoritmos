@@ -38,7 +38,11 @@
     <ClInclude Include="Escena.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+
     <ClInclude Include="Enemigo.h">
+
+    <ClInclude Include="Vehiculo.h">
+
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

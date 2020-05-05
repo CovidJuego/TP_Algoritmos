@@ -11,11 +11,11 @@ class Item : public Base
 private:
 	Estado estado;
 	bool show;
-	float inicialOtroX, inicialOtroY;
-	float posXprint, posYprint;
+	
 
 public:
-	Item(Base *otro, int x = 400, int y = 115) : Base() {
+	float posXprint, posYprint;
+	Item(Base *otro, int x = 0, int y = 0) : Base() {
 		this->x = x;
 		this->y = y;
 		estado = Tirado;
@@ -24,12 +24,13 @@ public:
 		dx = 0;
 		show = false;
 
-		//Intento fallido para hacer que se muevan en la pantalla
-		inicialOtroX = otro->getX();
-		inicialOtroY = otro->getY();
+		//Coordenadas en el form
+		posXprint = 0;
+		posYprint = 0;
 	}
 	~Item(){}
 	void Update(Graphics ^g, Bitmap^ sprite, Base* otro, Control^ control, String^ t) {
+		
 		Inventariar(otro, control, t, g);
 		Movimiento(g, otro);
 		Imprimir(g, sprite, otro);
@@ -48,9 +49,14 @@ public:
 	}
 	void Imprimir(Graphics ^g, Bitmap^ Sprite, Base *otro) {
 		if (estado == Inventariado && !show) return;
-		//Intento fallido para hacer que se muevan en la pantalla
-		posXprint = this->x - inicialOtroX - otro->getX();
-		posYprint = this->y - inicialOtroY - otro->getY();
+		//Coordenadas en el form
+		float right = g->VisibleClipBounds.Right, bottom = g->VisibleClipBounds.Bottom;
+		posXprint = x + (right*0.5 - (ancho/2) - otro->getX());
+		posYprint = y + (bottom*0.5 - (ancho/2) - otro->getY());
+
+		if (posXprint + ancho < -1 || posXprint > right) return;
+		if (posYprint + alto < -1 || posYprint > bottom) return;
+
 		Rectangle Dibujo = Rectangle(posXprint, posYprint, ancho, alto);
 		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
 
@@ -66,7 +72,7 @@ public:
 			if (DetectarColision(otro, g)) {
 				c->Enabled = true;	//Pongo un label que dice Pulse [E] para...
 				c->Text = t;
-				c->Location = Point(x - ancho, y + alto + 2);
+				c->Location = Point(posXprint - 60, posYprint + alto + 10);
 				return;
 			}
 		}
@@ -76,6 +82,7 @@ public:
 		}
 	}
 
+	Rectangle rect() { return Rectangle(posXprint, posYprint, ancho, alto); }
 	void setShow(bool a) { show = a; }
 	void setEstado(Estado e) { estado = e; }
 	Estado getEstado() { return estado; }
