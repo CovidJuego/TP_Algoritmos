@@ -65,7 +65,7 @@ namespace TPAlgoritmos {
 			 //Sprites
 			 array<Bitmap^> ^sprites;
 			 array<Button^>^inventaryButtons;
-			 Bitmap ^ poli;
+			 Bitmap ^ spritePoliciaAlerta;
 			 Personaje *steph;
 			 Enemigo * policia;
 			 Item *item;
@@ -126,12 +126,14 @@ namespace TPAlgoritmos {
 			
 			//Sprites
 			sprites = gcnew array<Bitmap^>(5);
-
+			
 			sprites[0] = gcnew Bitmap("ChocolateCity.jpg");
 			sprites[1] = gcnew Bitmap("StephMarlonso.png");
 			sprites[2] = gcnew Bitmap("ImagenTemp1.png");
 			sprites[3] = gcnew Bitmap("ImagenTemp2.png");
 			sprites[4] = gcnew System::Drawing::Bitmap("policia.png");
+			spritePoliciaAlerta = gcnew Bitmap("policiaAlerta.png");//Variable temporal luego será incluida en el array
+
 			//GameObjects
 			inventaryButtons = gcnew array<Button^>(4);
 
@@ -154,13 +156,19 @@ namespace TPAlgoritmos {
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 		buffer->Graphics->Clear(Color::Black);
 
-		mapa->Update(buffer->Graphics, sprites[0], steph->getX(), steph->getY());
+		mapa->Update(buffer->Graphics, sprites[0], steph->getX(), steph->getY(),steph->getX_mapa(),steph->getY_mapa(),steph->enemigosCerca);
 
 		item->Update(buffer->Graphics, sprites[2], steph, interaction_txt, "Pulse [E] para obtener Circulo");
 		item2->Update(buffer->Graphics, sprites[3], steph, interaction_txt, "Pulse [E] para obtener Cuadrado");
 		steph->Update(buffer->Graphics, sprites[1]);
-		policia->Update(buffer->Graphics, sprites[4]);
-
+		if (policia->alerta == false) {
+			policia->Update(buffer->Graphics, sprites[4],steph->getX_pantalla(),steph->getY_pantalla());
+			steph->enemigosCerca = false;
+		}
+		else {
+			policia->Update(buffer->Graphics, spritePoliciaAlerta,steph->getX_pantalla(),steph->getY_pantalla());
+			steph->enemigosCerca = true;
+		}
 		item->DibujarRectangulo(buffer->Graphics);
 		item2->DibujarRectangulo(buffer->Graphics);
 		steph->DibujarRectangulo(buffer->Graphics);
@@ -168,7 +176,7 @@ namespace TPAlgoritmos {
 		Console::SetCursorPosition(0, 0); cout << "Mapa: " << mapa->getX() << " / " << mapa->getY();
 		Console::SetCursorPosition(0, 2); cout << "Personaje: " << steph->getX() << " / " << steph->getY();
 		/*FUNCION QUE DETERMINA ALEATORIDAD DE LOS ENEMIGOS*/
-		if (*contador == 10) {
+		if (*contador == 20) {
 			srand(time(NULL));
 			Random r;
 			int direccion = r.Next(1, 4);

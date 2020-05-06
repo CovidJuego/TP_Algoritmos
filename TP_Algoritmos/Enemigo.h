@@ -4,9 +4,8 @@ class Enemigo : Base{
 private:
 	double speed;
 	int i_x, i_y;
-	bool alerta;
 public:
-	bool arr, aba, izq, der;
+	bool arr, aba, izq, der,alerta;
 	Enemigo(Bitmap^ sprite,  Graphics ^g,int tipo) : Base(50, 50, 22, 31) {
 		//Dimensiones
 		this->newAncho = sprite->Width / 3;
@@ -28,52 +27,78 @@ public:
 	}
 	~Enemigo() {}
 
-	void Update(Graphics ^g, Bitmap^ sprite) {
+	void Update(Graphics ^g, Bitmap^ sprite,int x_personaje, int y_personaje) {
+		Estado(g);
 		Imprimir(g, sprite);
-		Movimiento(g);
+		Movimiento(g,x_personaje,y_personaje);
+	}
+
+	void Estado(Graphics ^g) {
+		if (x - abs(g->VisibleClipBounds.Width / 2) < 10 || y - abs(g->VisibleClipBounds.Height / 2) < 10) {
+			alerta = true;
+		}
 	}
 
 	void reiniciarDirecciones() {
 		arr = der = izq = aba = false;
 	}
 
-	void Movimiento(Graphics ^g) {
-		//Teclas
-		cout << "Y" << y << " +DY: " << dy << " < " << g->VisibleClipBounds.Top;
-		if (izq) {
-			if (x + dx > g->VisibleClipBounds.Left) {
-				this->dx = -speed; this->dy = 0;
-				i_y = 3;
+	void Movimiento(Graphics ^g,int x_personaje,int y_personaje) {
+		if (!alerta) {
+			if (izq) {
+				if (x + dx > g->VisibleClipBounds.Left) {
+					this->dx = -speed; this->dy = 0;
+					i_y = 3;
+				}
+				else {
+					izq = false; der = true;
+				}
 			}
-			else {
-				izq = false; der = true;
+			if (der) {
+				if (x + dx < g->VisibleClipBounds.Right) {
+					this->dx = speed; this->dy = 0;
+					i_y = 1;
+				}
+				else {
+					der = false; izq = true;
+				}
 			}
+			if (aba) {
+				if (y + dy < g->VisibleClipBounds.Bottom) {
+					this->dx = 0; this->dy = speed;
+					i_y = 2;
+				}
+				else {
+					aba = false; arr = true;
+				}
+			}
+			if (arr) {
+				if (y + dy > g->VisibleClipBounds.Top) {
+					this->dx = 0; this->dy = -speed;
+					i_y = 0;
+				}
+				else {
+					arr = false; aba = true;
+				}
+			}
+			
 		}
-		if (der) {
-			if (x + dx < g->VisibleClipBounds.Right) {
-				this->dx = speed; this->dy = 0;
+		else {
+			cout << "X: " << x_personaje << " Y: " << y_personaje;
+			cout << "X: " << x  << " Y: " << y;
+			if (x + dx > x_personaje) {
+				this->dx = -speed;
+				i_y = 3;
+			} else {
+				this->dx = speed;
 				i_y = 1;
 			}
-			else {
-				der = false; izq = true;
-			}
-		}
-		if (aba) {
-			if (y + dy < g->VisibleClipBounds.Bottom) {
-				this->dx = 0; this->dy = speed;
+			if (y + dy < y_personaje) {
+				this->dy = speed;
 				i_y = 2;
-			}
-			else {
-				aba = false; arr = true;
-			}
-		}
-		if (arr) {
-			if (y + dy > g->VisibleClipBounds.Top) {
-				this->dx = 0; this->dy = -speed;
+			} else {
+				this->dy = -speed;
 				i_y = 0;
-			}
-			else {
-				arr = false; aba = true;
 			}
 		}
 		i_x++; i_x %= 3;
