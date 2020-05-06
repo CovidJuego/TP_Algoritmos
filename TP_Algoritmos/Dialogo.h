@@ -1,34 +1,30 @@
 #pragma once
 #include "Base.h"
-class FuncionesHistoria
+class Dialogo
 {
 private:
-	bool abrirConversacion;
+	bool conversacionAbierta;
 	float velocidadDeAnimacion, maxWidht;
 	float posXprint, posYprint, x, y;
 
 public:
-	FuncionesHistoria(){
-		abrirConversacion = false;
+	Dialogo(){
+		conversacionAbierta = false;
 		velocidadDeAnimacion = 5;
 		x = y = posXprint = posYprint = 0;
 	}
-	~FuncionesHistoria(){}
-	void AbrirConversacion(Control^ c, String^ t, float maxWidht, Base *p = nullptr) {
+	~Dialogo(){}
+	void AbrirConversacion(Control^ c, String^ t, float maxWidht, float x, float y) {
+		if (conversacionAbierta) return;
 		this->maxWidht = maxWidht;
 		c->Text = t;
 		c->AutoSize = false;
 		c->Size = Size(0, c->Height);
-		abrirConversacion = true;
-		if (p != nullptr) {
-			x = p->getX(); y = p->getY();
-		}
-		else {
-			x = 100; y = 50;
-		}
+		conversacionAbierta = true;
+		this->x = x; this->y = y;
 	}
 	void Animacion(Control ^c, Graphics^ g, Base *otro) {
-		if (!abrirConversacion) return;
+		if (!conversacionAbierta) return;
 
 		//Coordenadas en el form
 		float right = g->VisibleClipBounds.Right, bottom = g->VisibleClipBounds.Bottom;
@@ -44,9 +40,11 @@ public:
 		}
 	}
 	void CerrarConversacion(Control ^c, int bottom) {
+		if (!conversacionAbierta) return;
 		c->Location = Point(0, bottom + 1);
 		c->Text = "";
 		c->AutoSize = true;
+		conversacionAbierta = false;
 	}
 };
 

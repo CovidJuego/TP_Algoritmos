@@ -1,9 +1,5 @@
 #pragma once
-#include "Personaje.h"
-#include "Item.h"
-#include "Escena.h"
-#include "Vehiculo.h"
-#include "FuncionesHistoria.h"
+#include "Juego.h"
 
 namespace TPAlgoritmos {
 
@@ -40,12 +36,11 @@ namespace TPAlgoritmos {
 			{
 				delete components;
 				delete sprites;
-				delete steph;
-				delete mapa;
 				delete inventaryButtons;
 				delete g;
 				delete buffer;
 				delete context;
+				delete juego;
 			}
 		}
 
@@ -68,23 +63,19 @@ namespace TPAlgoritmos {
 			 BufferedGraphics ^buffer;
 			 BufferedGraphicsContext ^context;
 
-			 //Sprites
+			 //Arrays
 			 array<Bitmap^> ^sprites;
-			 
 			 array<Button^>^inventaryButtons;
 
-			 Personaje *steph;
-			 Item *item;
-			 Item *item2;
-			 Escena *mapa;
-			 FuncionesHistoria* funciones;
-
+			 //Game
+			 Juego *juego;
 
 	private: AxWMPLib::AxWindowsMediaPlayer^  axWindowsMediaPlayer1;
+	private: System::Windows::Forms::Panel^  Menu_pnl;
+	private: System::Windows::Forms::Button^  Play_btn;
 	private: System::Windows::Forms::Timer^  timer2;
 
 
-			 Vehiculo *moto;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -99,7 +90,10 @@ namespace TPAlgoritmos {
 			this->interaction_txt = (gcnew System::Windows::Forms::Label());
 			this->axWindowsMediaPlayer1 = (gcnew AxWMPLib::AxWindowsMediaPlayer());
 			this->timer2 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->Menu_pnl = (gcnew System::Windows::Forms::Panel());
+			this->Play_btn = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->axWindowsMediaPlayer1))->BeginInit();
+			this->Menu_pnl->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// timer1
@@ -127,14 +121,33 @@ namespace TPAlgoritmos {
 			// 
 			// timer2
 			// 
-			this->timer2->Enabled = true;
 			this->timer2->Tick += gcnew System::EventHandler(this, &MyForm::timer2_Tick);
+			// 
+			// Menu_pnl
+			// 
+			this->Menu_pnl->BackColor = System::Drawing::SystemColors::ActiveCaption;
+			this->Menu_pnl->Controls->Add(this->Play_btn);
+			this->Menu_pnl->Location = System::Drawing::Point(192, 78);
+			this->Menu_pnl->Name = L"Menu_pnl";
+			this->Menu_pnl->Size = System::Drawing::Size(200, 100);
+			this->Menu_pnl->TabIndex = 2;
+			// 
+			// Play_btn
+			// 
+			this->Play_btn->Location = System::Drawing::Point(122, 64);
+			this->Play_btn->Name = L"Play_btn";
+			this->Play_btn->Size = System::Drawing::Size(75, 23);
+			this->Play_btn->TabIndex = 0;
+			this->Play_btn->Text = L"Jugar";
+			this->Play_btn->UseVisualStyleBackColor = true;
+			this->Play_btn->Click += gcnew System::EventHandler(this, &MyForm::Play_btn_Click);
 			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(712, 306);
+			this->Controls->Add(this->Menu_pnl);
 			this->Controls->Add(this->interaction_txt);
 			this->Controls->Add(this->axWindowsMediaPlayer1);
 			this->ImeMode = System::Windows::Forms::ImeMode::Off;
@@ -143,6 +156,7 @@ namespace TPAlgoritmos {
 			this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyDown);
 			this->KeyUp += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyUp);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->axWindowsMediaPlayer1))->EndInit();
+			this->Menu_pnl->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -158,32 +172,31 @@ namespace TPAlgoritmos {
 			buffer = context->Allocate(g, ClientRectangle);
 			
 			//Sprites
-			sprites = gcnew array<Bitmap^>(5);
-
+			sprites = gcnew array<Bitmap^>(7);
 			sprites[0] = gcnew Bitmap("ChocolateCity.jpg");
 			sprites[1] = gcnew Bitmap("StephMarlonso.png");
 			sprites[2] = gcnew Bitmap("ImagenTemp1.png");
 			sprites[3] = gcnew Bitmap("ImagenTemp2.png");
 			sprites[4] = gcnew Bitmap("Moto.png");
+			sprites[5] = gcnew Bitmap("StephEnMoto.png");
+			sprites[6] = gcnew Bitmap("Doctor.png");
 
-			//GameObjects
+			//Juego
+			juego = new Juego(buffer->Graphics, sprites, Controls);
+
+			//InventaryButtons
 			inventaryButtons = gcnew array<Button^>(4);
-
-			funciones = new FuncionesHistoria();
-			steph = new Personaje(sprites[1], Controls, g);
-			item = new Item(steph, 150, 0);
-			item2 = new Item(steph, 100, 200);
-			mapa = new Escena();
-			moto = new Vehiculo(sprites[4]);
-
-			for (int i = 0; i < steph->inventary->getEspacios(); i++) {
+			for (int i = 0; i < juego->getPersonaje()->inventary->getEspacios(); i++) {
 				inventaryButtons[i] = (Button^)Controls->Find("button" + i, false)[0];
 				inventaryButtons[i]->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
 				inventaryButtons[i]->TabStop = false;
 			}
 
+			//Ajustes iniciales
 			this->axWindowsMediaPlayer1->Location = Point(0, 0);
 			this->axWindowsMediaPlayer1->Size = System::Drawing::Size(712, 372);
+
+			Menu_pnl->Dock = DockStyle::Fill;
 			
 		}
 		void PasarAlJuego() {
@@ -206,99 +219,81 @@ namespace TPAlgoritmos {
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 		buffer->Graphics->Clear(Color::Black);
 
-		mapa->Update(buffer->Graphics, sprites[0], steph->getX(), steph->getY());
-
-		item->Update(buffer->Graphics, sprites[2], steph, interaction_txt, "Pulse [E] para obtener Circulo");
-		item2->Update(buffer->Graphics, sprites[3], steph, interaction_txt, "Pulse [E] para obtener Cuadrado");
-		steph->Update(buffer->Graphics, sprites[1]);
-		moto->Update(buffer->Graphics, sprites[4], steph, interaction_txt, "Pulse [E] para subir a la moto", "Pulse [E] para bajarse de la moto");
-
-		item->DibujarRectangulo(buffer->Graphics);
-		item2->DibujarRectangulo(buffer->Graphics);
-		steph->DibujarRectangulo2(buffer->Graphics);
-		moto->DibujarRectangulo(buffer->Graphics);	
-
-		funciones->Animacion(interaction_txt, buffer->Graphics, steph);
-
-		Console::SetCursorPosition(0, 0); cout << "Mapa: " << mapa->getX() << " / " << mapa->getY();
-		Console::SetCursorPosition(0, 2); cout << "Personaje: " << steph->getX() << " / " << steph->getY();
-
-		Console::SetCursorPosition(0, 3); cout << "Circulo: " << item->getX() << " / " << item->getY();/*
-		Console::SetCursorPosition(0, 4); cout << "Circulo / en form: " << item->posXprint << " / " << item->posYprint;*/
+		juego->Update(buffer->Graphics, sprites, interaction_txt);
 
 		buffer->Render(g);
 	}
 	private: System::Void MyForm_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
 		if (e->KeyCode == Keys::W)
 		{
-			steph->arr = true;
+			juego->getPersonaje()->arr = true;
 		}
 		if (e->KeyCode == Keys::A)
 		{
-			steph->izq = true;
+			juego->getPersonaje()->izq = true;
 		}
 		if (e->KeyCode == Keys::S)
 		{
-			steph->aba = true;
+			juego->getPersonaje()->aba = true;
 		}
 		if (e->KeyCode == Keys::D)
 		{
-			steph->der = true;
+			juego->getPersonaje()->der = true;
 		}
 		if (e->KeyCode == Keys::E) {
 			if (interaction_txt->Text == "Pulse [E] para obtener Circulo") {
-				steph->inventary->AgregarItem(inventaryButtons, sprites[2], "Circulo");
-				item->setEstado(Estado::Inventariado);
+				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[2], "Circulo");
+				juego->getItem1()->setEstado(Estado::Inventariado);
 			}
 			if (interaction_txt->Text == "Pulse [E] para obtener Cuadrado") {
-				steph->inventary->AgregarItem(inventaryButtons, sprites[3], "Cuadrado");
-				item2->setEstado(Estado::Inventariado);
+				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[3], "Cuadrado");
+				juego->getItem2()->setEstado(Estado::Inventariado);
 			}
 			if (interaction_txt->Text == "Pulse [E] para subir a la moto") {
-				moto->Subir(steph);
+				juego->getMoto()->Subir(juego->getPersonaje());
 			}
 			if (interaction_txt->Text == "Pulse [E] para bajarse de la moto") {
-				moto->Bajar(steph);
+				juego->getMoto()->Bajar(juego->getPersonaje());
 			}
 		}
-		if (e->KeyCode == Keys::U) {
-			funciones->AbrirConversacion(interaction_txt, "Hola amigo que tal", 100, steph);
+		if (e->KeyCode == Keys::Space) {
+			if (juego->alguienHablando())
+				juego->CambiarTurnoDeHablar(interaction_txt, buffer->Graphics);
 		}
 	}
 	private: System::Void MyForm_KeyUp(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
 		if (e->KeyCode == Keys::W)
 		{
-			steph->arr = false;
+			juego->getPersonaje()->arr = false;
 		}
 		if (e->KeyCode == Keys::A)
 		{
-			steph->izq = false;
+			juego->getPersonaje()->izq = false;
 		}
 		if (e->KeyCode == Keys::S)
 		{
-			steph->aba = false;
+			juego->getPersonaje()->aba = false;
 		}
 		if (e->KeyCode == Keys::D)
 		{
-			steph->der = false;
+			juego->getPersonaje()->der = false;
 		}
 	}
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
 		interaction_txt->Enabled = true;
 		Control ^b = (Control^)sender;
 		if (b->Name == "Circulo") {
-			item->setShow(true);
-			item2->setShow(false);
+			juego->getItem1()->setShow(true);
+			juego->getItem2()->setShow(false);
 		}
 		else if (b->Name == "Cuadrado") {
-			item->setShow(false);
-			item2->setShow(true);
+			juego->getItem1()->setShow(false);
+			juego->getItem2()->setShow(true);
 		}
 		else {
-			item->setShow(false);
-			item2->setShow(false);
+			juego->getItem1()->setShow(false);
+			juego->getItem2()->setShow(false);
 		}
-		this->Focus();
 		interaction_txt->Focus();
 		interaction_txt->Enabled = false;
 	}
@@ -307,6 +302,12 @@ namespace TPAlgoritmos {
 		if (e->KeyCode == Keys::Space) {
 			PasarAlJuego();
 		}
+	}
+	private: System::Void Play_btn_Click(System::Object^  sender, System::EventArgs^  e) {
+		Menu_pnl->Visible = false;
+		this->axWindowsMediaPlayer1->Focus();
+		this->axWindowsMediaPlayer1->Ctlcontrols->play();
+		timer2->Start();
 	}
 };
 }

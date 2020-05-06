@@ -49,16 +49,11 @@ public:
 	void Imprimir(Graphics ^g, Bitmap^ Sprite, Base *otro) {
 		if (estado == Inventariado && !show) return;
 		//Coordenadas en el form
-		float right = g->VisibleClipBounds.Right, bottom = g->VisibleClipBounds.Bottom;
-		posXprint = x + (right*0.5 - (ancho/2) - otro->getX());
-		posYprint = y + (bottom*0.5 - (ancho/2) - otro->getY());
+		CoordenadasEnElForm(g, otro);
 
-		if (posXprint + ancho < -1 || posXprint > right) return;
-		if (posYprint + alto < -1 || posYprint > bottom) return;
-
+		//Impresion
 		Rectangle Dibujo = Rectangle(posXprint, posYprint, ancho, alto);
 		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
-
 		g->DrawImage(Sprite, Dibujo);
 	}
 	bool DetectarColision(Base* otro, Graphics^g) {

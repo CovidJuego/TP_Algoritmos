@@ -10,7 +10,6 @@ private:
 	int espaciosInventario;
 
 public:
-	bool see;
 
 	InventaryController() { 
 		espaciosInventario = 4;

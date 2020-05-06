@@ -7,7 +7,8 @@ private:
 	bool pasajero;
 
 public:
-	Vehiculo(Bitmap^ sprite) : Base(100, 15) {
+	Vehiculo(Bitmap^ sprite, int x = 0, int y = 0) : Base() {
+		this->x = x; this->y = y;
 		this->newAncho = sprite->Width / 4;
 		this->newAlto = sprite->Height / 4;
 		this->ancho = newAncho;		//ancho del zoom de la imagen
@@ -15,7 +16,7 @@ public:
 
 		//Region inicial del Sprite
 		i_x = 0;
-		i_y = 0.5;
+		i_y = 1;
 
 		speed = 45;
 
@@ -32,10 +33,10 @@ public:
 		pasajero = false;
 		otro->enVehiculo = false;
 	}
-	void Update(Graphics^ g, Bitmap^ Sprite, Personaje *otro, Control^ control, String^textEntrar, String^textSalir) {
+	void Update(Graphics^ g, Bitmap^ Sprite1, Bitmap^ Sprite2, Personaje *otro, Control^ control, String^textEntrar, String^textSalir) {
 		QuiereEntrar_Salir(g, otro, control, textEntrar, textSalir);
 		Conducir(otro);
-		Imprimir(g, Sprite, otro);
+		Imprimir(g, Sprite1, Sprite2, otro);
 	}
 	void Conducir(Personaje *otro) {
 		if (!pasajero) return;
@@ -93,18 +94,14 @@ public:
 			return true;
 		return false;
 	}
-	void Imprimir(Graphics^ g, Bitmap^Sprite, Personaje *otro) {
+	void Imprimir(Graphics^ g, Bitmap^ Sprite1, Bitmap^ Sprite2, Personaje *otro) {
 		//Coordenadas en el form
-		float right = g->VisibleClipBounds.Right, bottom = g->VisibleClipBounds.Bottom;
-		posXprint = x + (right*0.5 - (ancho / 2) - otro->getX());
-		posYprint = y + (bottom*0.5 - (ancho / 2) - otro->getY());
-
-		if (posXprint + ancho < -1 || posXprint > right) return;
-		if (posYprint + alto < -1 || posYprint > bottom) return;
+		CoordenadasEnElForm(g, otro);
 
 		Rectangle Dibujo = Rectangle(posXprint, posYprint, ancho, alto);
 		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
 
-		g->DrawImage(Sprite, Dibujo, Region, GraphicsUnit::Pixel);
+		if (pasajero) g->DrawImage(Sprite2, Dibujo, Region, GraphicsUnit::Pixel);
+		else g->DrawImage(Sprite1, Dibujo, Region, GraphicsUnit::Pixel);
 	}
 };

@@ -25,4 +25,13 @@ public:
 	virtual Rectangle rect(Graphics^g) { return Rectangle(); }			//x2
 	void DibujarRectangulo(Graphics^g) { g->DrawRectangle(Pens::Red, rect()); }
 	void DibujarRectangulo2(Graphics^g) { g->DrawRectangle(Pens::Red, rect(g)); }
+	void CoordenadasEnElForm(Graphics^ g, Base *otro){
+		//Coordenadas en el form
+		float right = g->VisibleClipBounds.Right, bottom = g->VisibleClipBounds.Bottom;
+		posXprint = x + (right*0.5 - (ancho / 2) - otro->getX());
+		posYprint = y + (bottom*0.5 - (ancho / 2) - otro->getY());
+
+		if (posXprint + ancho < -1 || posXprint > right) return;
+		if (posYprint + alto < -1 || posYprint > bottom) return;
+	}
 };
