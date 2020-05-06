@@ -15,7 +15,8 @@ private:
 	float posXprint, posYprint;
 
 public:
-	Item(Base *otro, int x = 400, int y = 115) : Base() {
+
+	Item(Base *otro, int x = 0, int y = 0) : Base() {
 		this->x = x;
 		this->y = y;
 		estado = Tirado;
@@ -51,9 +52,12 @@ public:
 		//Intento fallido para hacer que se muevan en la pantalla
 		posXprint = this->x - inicialOtroX - otro->getX();
 		posYprint = this->y - inicialOtroY - otro->getY();
+		//Coordenadas en el form
+		CoordenadasEnElForm(g, otro);
+
+		//Impresion
 		Rectangle Dibujo = Rectangle(posXprint, posYprint, ancho, alto);
 		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
-
 		g->DrawImage(Sprite, Dibujo);
 	}
 	bool DetectarColision(Base* otro, Graphics^g) {
@@ -75,7 +79,6 @@ public:
 			c->Text = "";
 		}
 	}
-
 	void setShow(bool a) { show = a; }
 	void setEstado(Estado e) { estado = e; }
 	Estado getEstado() { return estado; }

@@ -137,6 +137,7 @@
     <ClInclude Include="Base.h" />
     <ClInclude Include="Enemigo.h" />
     <ClInclude Include="Escena.h" />
+    <ClInclude Include="FuncionesHistoria.h" />
     <ClInclude Include="InventaryController.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="MyForm.h">
