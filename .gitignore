@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+.vs/TP_Algoritmos/v15/Browse.VC.db
+.vs/TP_Algoritmos/v15/Browse.VC.opendb
+.vs/TP_Algoritmos/v15/Browse.VC.db
+*.db
