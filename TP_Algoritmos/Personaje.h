@@ -4,7 +4,7 @@
 #include "Dialogo.h"
 #include "Colisiones.h"
 
-class Personaje : public Base 
+class Personaje : public Base<float, int>
 {
 private:
 	float speed;

@@ -1,7 +1,7 @@
 #pragma once
 #include "Base.h"
 
-class Colision : public Base
+class Colision : public Base<float, int>
 {
 private:
 	bool isTrigger;
@@ -61,13 +61,13 @@ public:
 		if (colisionadores != nullptr) delete colisionadores;
 		colisionadores = aux;
 	}
-	void Update(Graphics^g, Base *otro) {
+	void Update(Graphics^g, Base<float, int> *otro) {
 		for (int i = 0; i < nroColisionadores; i++) {
 			colisionadores[i]->Update(g, otro);
 			colisionadores[i]->DibujarRectangulo(g);
 		}
 	}
-	bool CheckColision(Base *per) {
+	bool CheckColision(Base<float, int> *per) {
 		for (int i = 0; i < nroColisionadores; i++) {
 			if (colisionadores[i]->CheckColision(per))
 				return true;

@@ -13,11 +13,13 @@ using std::string;
 using namespace System;
 using namespace System::Drawing;
 using namespace System::Windows::Forms;
+
+template<typename T, typename R>
 class Base
 {
 protected:
-	float x, y, posXprint, posYprint, ancho, alto, dx, dy, newAncho, newAlto;
-	int i_x, i_y;
+	T x, y, posXprint, posYprint, ancho, alto, dx, dy, newAncho, newAlto;
+	R i_x, i_y;
 
 public:
 	Base(int x = 0, int y = 0, int ancho = 0, int alto = 0, int dx = 0, int dy = 0) : 

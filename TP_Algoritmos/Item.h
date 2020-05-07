@@ -6,15 +6,14 @@ enum  Estado
 	Tirado, Inventariado
 };
 
-class Item : public Base
+class Item : public Base<float, int>
 {
-private:
+protected:
 	Estado estado;
 	list<Item*> tirables;	//objetos que tira (el mismo objeto o balas)
 	float tiempoEntreDisparo, tiempo, velDisparo;
 	bool show, tirado;	//show para mostrar en mano si es que ha sido seleccionado desde el inventario
 	// tirado es auxiliar para el tiempoEntreDisparo
-	
 
 public:
 	Item(Base *otro, int x = 0, int y = 0, float disparo = 0, float velDisparo = 30, int corte = 1, Bitmap^ Sprite = nullptr, Estado e = Tirado) : Base() {
@@ -44,7 +43,8 @@ public:
 		i_x = i_y = 0;
 
 		//Disparar o tirar Items
-		this->tiempoEntreDisparo = tiempo;
+		this->tirado = false;
+		this->tiempoEntreDisparo = disparo;
 		this->tiempo = tiempoEntreDisparo;
 		this->velDisparo = velDisparo;
 	}
@@ -105,28 +105,37 @@ public:
 		}
 	}
 	void TirarItem(Personaje *otro, Bitmap^ sprite = nullptr) {
-		if (tirado) return;
-		Item *nuevo = new Item(otro, otro->getX(), otro->getY(), tiempoEntreDisparo, velDisparo, 8 , sprite, Tirado);
-		nuevo->ancho /= 2;
-		nuevo->alto /= 2;
-		switch (otro->getI_Y())	//obtengo i_y ya que es la variable que determina la direccion del jugador
-		{
-		case 1:	nuevo->setDX(-velDisparo); break;	//si es 1 es izquierda y asi...
-		case 3: nuevo->setDX(velDisparo); break;
-		case 2: nuevo->setDY(velDisparo); break;
-		case 0: nuevo->setDY(-velDisparo); break;
-		default:
-			break;
+		if (!tirado) {
+			Item *nuevo = new Item(otro, otro->getX(), otro->getY(), tiempoEntreDisparo, velDisparo, 8, sprite, Tirado);
+			if (sprite == nullptr) {
+				nuevo->ancho /= 3;
+				nuevo->alto /= 3;
+			}
+			else {
+				nuevo->ancho /= 1.5;
+				nuevo->alto /= 1.5;
+			}
+			switch (otro->getI_Y())	//obtengo i_y ya que es la variable que determina la direccion del jugador
+			{
+			case 1:	nuevo->setDX(-velDisparo); break;	//si es 1 es izquierda y asi...
+			case 3: nuevo->setDX(velDisparo); break;
+			case 2: nuevo->setDY(velDisparo); break;
+			case 0: nuevo->setDY(-velDisparo); break;
+			default:
+				break;
+			}
+			tirables.push_back(nuevo);
+			tirado = true;
 		}
-		tirables.push_back(nuevo);
 	}
 	void CheckItemTirable(Graphics^ g) {
 		if (tirables.size() <= 0) return;	//si sale de los limites del form CHAU
 		for (Item *i : tirables) {
 			if ((i->getPosXPrint() + i->getAncho() < 0 || i->getPosXPrint() > g->VisibleClipBounds.Right) ||
-				(i->getPosYPrint() + i->getAlto() < 0 || i->getPosYPrint() > g->VisibleClipBounds.Bottom))
+				(i->getPosYPrint() + i->getAlto() < 0 || i->getPosYPrint() > g->VisibleClipBounds.Bottom)) {
 				tirables.remove(i);
-			break;
+				break;
+			}
 		}
 	}
 	void UpdateTirables(Graphics^ g, Bitmap^ sprite, Bitmap^ sprite2, Base* otro, bool noDeFuego = false) {
@@ -156,5 +165,3 @@ public:
 	float getAncho() { return ancho; }
 	float getAlto() { return alto; }
 };
-
-

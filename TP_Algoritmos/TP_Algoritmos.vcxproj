@@ -135,10 +135,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base.h" />
+    <ClInclude Include="Colisiones.h" />
+    <ClInclude Include="Doctor.h" />
     <ClInclude Include="Escena.h" />
-    <ClInclude Include="FuncionesHistoria.h" />
+    <ClInclude Include="Dialogo.h" />
     <ClInclude Include="InventaryController.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="Juego.h" />
     <ClInclude Include="MyForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>

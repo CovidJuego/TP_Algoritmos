@@ -14,16 +14,20 @@ public:
 		x = y = posXprint = posYprint = 0;
 	}
 	~Dialogo(){}
-	void AbrirConversacion(Control^ c, String^ t, float maxWidht, float x, float y) {
+	void AbrirConversacion(Control^ c, String^ t, float x, float y) {
 		if (conversacionAbierta) return;
-		this->maxWidht = maxWidht;
+		this->maxWidht = (t->Length * 5) + 5;
+		c->Enabled = true;
+		if (t[t->Length - 1] == 'S') c->ForeColor = Color::Green;
+		else c->ForeColor = Color::Blue;
+		t = t->Remove(t->Length - 1);
 		c->Text = t;
 		c->AutoSize = false;
 		c->Size = Size(0, c->Height);
 		conversacionAbierta = true;
 		this->x = x; this->y = y;
 	}
-	void Animacion(Control ^c, Graphics^ g, Base *otro) {
+	void Animacion(Control ^c, Graphics^ g, Base<float, int> *otro) {
 		if (!conversacionAbierta) return;
 
 		//Coordenadas en el form
@@ -41,6 +45,7 @@ public:
 	}
 	void CerrarConversacion(Control ^c, int bottom) {
 		if (!conversacionAbierta) return;
+		c->ForeColor = Color::Black;
 		c->Location = Point(0, bottom + 1);
 		c->Text = "";
 		c->AutoSize = true;

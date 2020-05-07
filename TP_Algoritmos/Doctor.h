@@ -2,7 +2,7 @@
 #include "Dialogo.h"
 #include "Base.h"
 #include "Personaje.h"
-class Doctor : public Base
+class Doctor : public Base<float, int>
 {
 private:
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "Personaje.h"
-class Vehiculo : public Base
+class Vehiculo : public Base<float, int>
 {
 private:
 	float speed;

@@ -12,7 +12,7 @@ private:
 public:
 
 	InventaryController() { 
-		espaciosInventario = 4;
+		espaciosInventario = 7;
 	}
 	~InventaryController(){}
 
@@ -21,18 +21,34 @@ public:
 		for (int i = 0; i < espaciosInventario; i++)
 		{
 			inventarySpace[i] = gcnew Button();
-			inventarySpace[i]->Location = System::Drawing::Point(g->VisibleClipBounds.Right - 55 - (i*55), g->VisibleClipBounds.Bottom - 55);
 			inventarySpace[i]->Name = "button"+i;
 			inventarySpace[i]->Size = System::Drawing::Size(50, 50);
 			inventarySpace[i]->Text = "";
 			inventarySpace[i]->BackColor = System::Drawing::Color::FromArgb(150, Color::Green);
 			control->Add(inventarySpace[i]);
+			if (i < espaciosInventario - 3) {
+				inventarySpace[i]->BackColor = System::Drawing::Color::FromArgb(150, Color::Green);
+				inventarySpace[i]->Location = System::Drawing::Point(g->VisibleClipBounds.Right - 55 - (i * 55), g->VisibleClipBounds.Bottom - 55);
+			}
+			else { 
+				inventarySpace[i]->BackColor = System::Drawing::Color::FromArgb(150, Color::Aqua);
+				inventarySpace[i]->Location = System::Drawing::Point(10 + ((i - (espaciosInventario - 3)) * 55), g->VisibleClipBounds.Bottom - 55); 
+			}
 		}
 	}
-
 	void AgregarItem(array<Button^>^invButtons, Bitmap ^sprite, String ^t) {
-		for (int i = 0; i < invButtons->Length; i++) {
+		for (int i = 0; i < espaciosInventario - 3; i++) {
 			if (invButtons[i]->Text == ""){
+				invButtons[i]->Text = " ";
+				invButtons[i]->Name = t;	//Le pongo de nombre el nombre del Item para que despues identifique que item quiero seleccionar
+				invButtons[i]->Image = sprite;
+				break;
+			}
+		}
+	}
+	void AgregarElemento(array<Button^>^invButtons, Bitmap ^sprite, String ^t) {
+		for (int i = espaciosInventario - 3; i < espaciosInventario; i++) {
+			if (invButtons[i]->Text == "") {
 				invButtons[i]->Text = " ";
 				invButtons[i]->Name = t;	//Le pongo de nombre el nombre del Item para que despues identifique que item quiero seleccionar
 				invButtons[i]->Image = sprite;
