@@ -1,9 +1,4 @@
 #pragma once
-#include "Personaje.h"
-#include "Item.h"
-#include "Escena.h"
-#include<time.h>
-#include "Enemigo.h"
 #include "Juego.h"
 
 namespace TPAlgoritmos {
@@ -29,8 +24,6 @@ namespace TPAlgoritmos {
 			//TODO: agregar código de constructor aquí
 			//
 			Start();
-			contador = new int;
-			*contador = 0;
 		}
 
 	protected:
@@ -69,19 +62,6 @@ namespace TPAlgoritmos {
 			 Graphics ^g;
 			 BufferedGraphics ^buffer;
 			 BufferedGraphicsContext ^context;
-			 
-			 //Sprites
-			 array<Bitmap^> ^sprites;
-			 array<Button^>^inventaryButtons;
-			 Bitmap ^ spritePoliciaAlerta;
-			 Bitmap ^ spritePolicia;
-			 Personaje *steph;
-			 Enemigo * policia;
-			 Item *item;
-			 Item *item2;
-			 Escena *mapa;
-			 //Variables Especiales
-			 int * contador;//Contador para reedifinir la direccion de los enemigos
 
 			 //Arrays
 			 array<Bitmap^> ^sprites;
@@ -192,28 +172,17 @@ namespace TPAlgoritmos {
 			buffer = context->Allocate(g, ClientRectangle);
 			
 			//Sprites
-			sprites = gcnew array<Bitmap^>(7);
-			sprites[0] = gcnew Bitmap("ChocolateCity.jpg");
+			sprites = gcnew array<Bitmap^>(9);
+			//sprites[0] = gcnew Bitmap("ChocolateCity.jpg");
 			sprites[1] = gcnew Bitmap("StephMarlonso.png");
 			sprites[2] = gcnew Bitmap("ImagenTemp1.png");
 			sprites[3] = gcnew Bitmap("ImagenTemp2.png");
-			spritesPolicia = gcnew System::Drawing::Bitmap("policia.png");
-			spritePoliciaAlerta = gcnew Bitmap("policiaAlerta.png");//Variable temporal luego será incluida en el array
-
-			//GameObjects
-			inventaryButtons = gcnew array<Button^>(4);
-
-			steph = new Personaje(sprites[1], Controls, g);
-			item = new Item(steph);
-			item2 = new Item(steph, 100, 200);
-			mapa = new Escena();
-			policia = new Enemigo(spritesPolicia,g,1);
-			//Inventario
-			for (int i = 0; i < steph->inventary->getEspacios(); i++) {
 			sprites[4] = gcnew Bitmap("Moto.png");
-			sprites[5] = gcnew Bitmap("StephEnMoto.png");
+			//sprites[5] = gcnew Bitmap("StephEnMoto.png");
 			sprites[6] = gcnew Bitmap("Doctor.png");
-
+			sprites[7] = gcnew Bitmap("policia.png");
+			sprites[8] = gcnew Bitmap("policiaAlerta.png");
+			
 			//Juego
 			juego = new Juego(buffer->Graphics, sprites, Controls);
 
@@ -252,49 +221,8 @@ namespace TPAlgoritmos {
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 		buffer->Graphics->Clear(Color::Black);
 
-		mapa->Update(buffer->Graphics, sprites[0], steph->getX(), steph->getY(),steph->getX_mapa(),steph->getY_mapa(),steph->enemigosCerca);
-
-		item->Update(buffer->Graphics, sprites[2], steph, interaction_txt, "Pulse [E] para obtener Circulo");
-		item2->Update(buffer->Graphics, sprites[3], steph, interaction_txt, "Pulse [E] para obtener Cuadrado");
-		steph->Update(buffer->Graphics, sprites[1]);
-		if (policia->alerta == false) {
-			policia->Update(buffer->Graphics, spritePolicia,steph->getX_pantalla(),steph->getY_pantalla());
-			steph->enemigosCerca = false;
-		}
-		else {
-			policia->Update(buffer->Graphics, spritePoliciaAlerta,steph->getX_pantalla(),steph->getY_pantalla());
-			steph->enemigosCerca = true;
-		}
-		item->DibujarRectangulo(buffer->Graphics);
-		item2->DibujarRectangulo(buffer->Graphics);
-		steph->DibujarRectangulo(buffer->Graphics);
-
-		Console::SetCursorPosition(0, 0); cout << "Mapa: " << mapa->getX() << " / " << mapa->getY();
-		Console::SetCursorPosition(0, 2); cout << "Personaje: " << steph->getX() << " / " << steph->getY();
-		/*FUNCION QUE DETERMINA ALEATORIDAD DE LOS ENEMIGOS*/
-		if (*contador == 20) {
-			srand(time(NULL));
-			Random r;
-			int direccion = r.Next(1, 4);
-			Console::SetCursorPosition(7, 8); cout << "Direccion: " << direccion;
-			policia->reiniciarDirecciones();
-			if (direccion == 1) {
-				policia->arr = true;
-			}
-			else if(direccion == 2) {
-				policia->der = true;
-			}
-			else if (direccion == 3) {
-				policia->izq = true;
-			}
-			else {
-				policia->aba = true;
-			}
-			*contador = 0;
-		}
-		//Console::SetCursorPosition(7, 4); cout << "Contador: " << *contador;
-		*contador+=1;
 		juego->Update(buffer->Graphics, sprites, interaction_txt);
+
 		buffer->Render(g);
 	}
 	private: System::Void MyForm_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {

@@ -4,9 +4,10 @@
 #include "Escena.h"
 #include "Vehiculo.h"
 #include "Dialogo.h"
+#include "Enemigo.h"
 #include "Colisiones.h"
 #include "Doctor.h"
-
+#include<time.h>
 class Juego
 {
 private:
@@ -18,8 +19,10 @@ private:
 	Colisiones *colisiones;
 	Doctor *doctor;
 	Vehiculo *moto;
+	Enemigo * policia;
 	bool ultimoDialogo;
-
+	//Variables Especiales
+	int * contador;//Contador para reedifinir la direccion de los enemigos
 public:
 	Juego(Graphics^g, array<Bitmap^>^sprites, Control::ControlCollection^ Controls){
 		dialogo = new Dialogo();
@@ -30,8 +33,10 @@ public:
 		moto = new Vehiculo(sprites[4], 6900, 750);
 		colisiones = new Colisiones();
 		doctor = new Doctor(sprites[6], 9205, 4095);
+		policia = new Enemigo(sprites[7], g, 1);
 		ultimoDialogo = false;
-
+		contador = new int;
+		*contador = 0;
 		for (int i = 0; i < 4; i++) {
 			colisiones->AgregarColision(i * 10, i * 10, i + 10, i + 10);
 		}
@@ -43,6 +48,7 @@ public:
 		delete doctor;
 		delete moto;
 		delete colisiones;
+		delete contador;
 	}
 	void Update(Graphics^ g, array<Bitmap^>^sprites, Control^ interaction_txt) {
 
@@ -54,7 +60,36 @@ public:
 		steph->Update(g, sprites[1], interaction_txt, "Hola webon que tal", 120, dialogo);
 		doctor->Update(g, sprites[6], steph, interaction_txt, "Hola Amiguito", 100, dialogo);
 		colisiones->Update(g, steph);
-
+		if (policia->alerta == false) {
+			policia->Update(g, sprites[7], steph->getX_pantalla(), steph->getY_pantalla());
+			steph->enemigosCerca = false;
+		}
+		else {
+			policia->Update(g, sprites[8], steph->getX_pantalla(), steph->getY_pantalla());
+			steph->enemigosCerca = true;
+		}
+		/*FUNCION QUE DETERMINA ALEATORIDAD DE LOS ENEMIGOS*/
+		if (*contador == 20) {
+			srand(time(NULL));
+			Random r;
+			int direccion = r.Next(1, 4);
+			Console::SetCursorPosition(7, 8); cout << "Direccion: " << direccion;
+			policia->reiniciarDirecciones();
+			if (direccion == 1) {
+				policia->arr = true;
+			}
+			else if (direccion == 2) {
+				policia->der = true;
+			}
+			else if (direccion == 3) {
+				policia->izq = true;
+			}
+			else {
+				policia->aba = true;
+			}
+			*contador = 0;
+		}
+		*contador += 1;
 		item->DibujarRectangulo(g);
 		item2->DibujarRectangulo(g);
 		steph->DibujarRectangulo2(g);

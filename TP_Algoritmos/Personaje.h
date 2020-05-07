@@ -9,13 +9,12 @@ private:
 	float speed;
 	float posItemX, posItemY;
 	bool abrirDialogo;
-
 public:
 	//Atributos publicos
-	int x_pantalla, y_pantalla,x_mapa,y_mapa;
+	bool arr, aba, izq, der, enVehiculo, noMoverse;
+	int x_pantalla, y_pantalla, x_mapa, y_mapa;
 	bool enemigosCerca;
 	InventaryController *inventary;
-	bool arr, aba, izq, der, enVehiculo, noMoverse;
 
 	Personaje(Bitmap^ sprite, Control::ControlCollection^ controls, Graphics ^g, int x = 0, int y = 0) : Base() { 
 		this->x = x; this->y = y;
@@ -29,7 +28,6 @@ public:
 		arr = aba = izq = der = false;	//teclas
 		enVehiculo = noMoverse = abrirDialogo =	false;	//determinan si NO tiene libertad para moverse
 		speed = 20;
-
 		//Enemigos Cerca?
 		enemigosCerca = false;
 		//x,y mapa
@@ -45,7 +43,7 @@ public:
 		inventary = new InventaryController();
 		inventary->CrearInventario(g, controls);
 	}
-	~Personaje(){}
+	~Personaje() { delete inventary; }
 
 	int getX_pantalla() {
 		return x_pantalla;
@@ -72,6 +70,7 @@ public:
 			x = x_mapa;
 			y = y_mapa;
 		}
+	}
 
 	void Update(Graphics ^g, Bitmap^ sprite, Control^ c, String^ t, int n, Dialogo *d) {
 		cambiarValores();
@@ -82,7 +81,6 @@ public:
 	}
 
 	void Movimiento(Graphics ^g) {
-		
 		//Teclas
 		if (izq) {
 			if (x + dx > g->VisibleClipBounds.Left || !enemigosCerca) {
@@ -112,7 +110,7 @@ public:
 			}
 		}
 		if (arr) {
-			if (y + dy> g->VisibleClipBounds.Top || !enemigosCerca) {
+			if (y + dy > g->VisibleClipBounds.Top || !enemigosCerca) {
 				this->dx = 0; this->dy = -speed;
 				i_y = 0;
 			}
@@ -136,6 +134,7 @@ public:
 	}
 
 	void Imprimir(Graphics ^g, Bitmap^ Sprite) {
+		if (enVehiculo) return;
 		if (enemigosCerca) {
 			Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
 			g->DrawImage(Sprite, x * 1.0, y * 1.0, Region, System::Drawing::GraphicsUnit::Pixel);
@@ -145,12 +144,9 @@ public:
 			Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
 			g->DrawImage(Sprite, Dibujo, Region, GraphicsUnit::Pixel);
 		}
-		if (enVehiculo) return;
-		/*Rectangle Dibujo = Rectangle(g->VisibleClipBounds.Right/2 - (ancho/2), g->VisibleClipBounds.Bottom/2 - (alto/2), ancho, alto);
-		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);CODIGO REPETIDO(BORRAR SI NO SIRVE)*/
 	}
 	Rectangle rect(Graphics^g) {
-		return Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2), g->VisibleClipBounds.Bottom / 2, ancho, alto);
+		return Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2), g->VisibleClipBounds.Bottom / 2 - (alto / 2), ancho, alto);
 	}
 
 	void AbrirDialogo(Control^ c, String^ t, int n, Dialogo* dialogo) {

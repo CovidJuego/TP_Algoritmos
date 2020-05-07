@@ -17,7 +17,6 @@ public:
 	~Base(){}
 	float getX() { return this->x; }
 	float getY() { return this->y; }
-
 	float getDX() { return this->dx; }
 	float getDY() { return this->dy; }
 	void setX(float x) { this->x = x; }
@@ -35,5 +34,4 @@ public:
 		if (posXprint + ancho < -1 || posXprint > right) return;
 		if (posYprint + alto < -1 || posYprint > bottom) return;
 	}
-
 };

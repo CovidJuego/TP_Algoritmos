@@ -1,0 +1,37 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+/.vs/ProjectSettings.json
+/.vs/TP_Algoritmos/v15/Browse.VC.opendb
+/.vs/TP_Algoritmos/v15/ipch/AutoPCH/7787bb2ea1b6f138/FUNCIONESHISTORIA.ipch
+/.vs/VSWorkspaceState.json
+/TP_Algoritmos/Trabajo TP.docx

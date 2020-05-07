@@ -1,12 +1,12 @@
 #pragma once
 #include "Base.h"
-class Enemigo : Base{
+class Enemigo : Base {
 private:
 	double speed;
 	int i_x, i_y;
 public:
-	bool arr, aba, izq, der,alerta;
-	Enemigo(Bitmap^ sprite,  Graphics ^g,int tipo) : Base(50, 50, 22, 31) {
+	bool arr, aba, izq, der, alerta;
+	Enemigo(Bitmap^ sprite, Graphics ^g, int tipo) : Base(50, 50, 22, 31) {
 		//Dimensiones
 		this->newAncho = sprite->Width / 3;
 		this->newAlto = sprite->Height / 4;
@@ -27,10 +27,10 @@ public:
 	}
 	~Enemigo() {}
 
-	void Update(Graphics ^g, Bitmap^ sprite,int x_personaje, int y_personaje) {
+	void Update(Graphics ^g, Bitmap^ sprite, int x_personaje, int y_personaje) {
 		Estado(g);
 		Imprimir(g, sprite);
-		Movimiento(g,x_personaje,y_personaje);
+		Movimiento(g, x_personaje, y_personaje);
 	}
 
 	void Estado(Graphics ^g) {
@@ -43,7 +43,7 @@ public:
 		arr = der = izq = aba = false;
 	}
 
-	void Movimiento(Graphics ^g,int x_personaje,int y_personaje) {
+	void Movimiento(Graphics ^g, int x_personaje, int y_personaje) {
 		if (!alerta) {
 			if (izq) {
 				if (x + dx > g->VisibleClipBounds.Left) {
@@ -81,22 +81,24 @@ public:
 					arr = false; aba = true;
 				}
 			}
-			
+
 		}
 		else {
 			cout << "X: " << x_personaje << " Y: " << y_personaje;
-			cout << "X: " << x  << " Y: " << y;
+			cout << "X: " << x << " Y: " << y;
 			if (x + dx > x_personaje) {
 				this->dx = -speed;
 				i_y = 3;
-			} else {
+			}
+			else {
 				this->dx = speed;
 				i_y = 1;
 			}
 			if (y + dy < y_personaje) {
 				this->dy = speed;
 				i_y = 2;
-			} else {
+			}
+			else {
 				this->dy = -speed;
 				i_y = 0;
 			}
