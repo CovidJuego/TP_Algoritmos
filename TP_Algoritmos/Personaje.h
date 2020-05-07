@@ -9,13 +9,14 @@ class Personaje : public Base<float, int>
 private:
 	float speed;
 	float posItemX, posItemY;
+	int salud, MaxSalud;
 
 public:
 	//Atributos publicos
 	bool arr, aba, izq, der, enVehiculo, noMoverse;
 	InventaryController *inventary;
 
-	Personaje(Bitmap^ sprite, Control::ControlCollection^ controls, Graphics ^g, int x = 0, int y = 0) : Base() { 
+	Personaje(Bitmap^ sprite, Control::ControlCollection^ controls, Graphics ^g, int x = 0, int y = 0, int MaxSalud = 5) : Base() { 
 		this->x = x; this->y = y;
 		//Dimesiones
 		this->newAncho = sprite->Width / 9;
@@ -32,6 +33,9 @@ public:
 		i_x = 0;
 		i_y = 2;
 
+		//Otros ajustes
+		this->MaxSalud = MaxSalud;
+		salud = this->MaxSalud;
 		inventary = new InventaryController();
 		inventary->CrearInventario(g, controls);
 	}
@@ -66,7 +70,6 @@ public:
 			this->dx = 0; this->dy = 0;
 			this->i_x = 0;
 		}
-
 	}
 	void ChequearPared(Colisiones* colisiones) {
 		if (colisiones->CheckColision(this)) {
@@ -76,10 +79,15 @@ public:
 	}
 
 	void Imprimir(Graphics ^g, Bitmap^ Sprite) {
+		if (salud < MaxSalud) {
+			g->FillRectangle(Brushes::Red, posXprint, posYprint - 10, 38.0, 6.0);
+			g->FillRectangle(Brushes::Green, posXprint, posYprint - 10, (float)((38 * salud) / MaxSalud), 6.0);
+			g->DrawRectangle(Pens::Black, posXprint, posYprint - 10, 38.0, 6.0);
+		}
 		x += dx;
 		y += dy;
 		if (enVehiculo) return;
-		Rectangle Dibujo = Rectangle(g->VisibleClipBounds.Right/2 - (ancho/2), g->VisibleClipBounds.Bottom/2 - (alto/2), ancho, alto);
+		Rectangle Dibujo = Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2), g->VisibleClipBounds.Bottom / 2 - (alto / 2), ancho, alto);
 		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
 
 		g->DrawImage(Sprite, Dibujo, Region, GraphicsUnit::Pixel);
@@ -90,4 +98,7 @@ public:
 	float getAncho() { return ancho; }
 	float getAlto() { return alto; }
 	int getI_Y() { return i_y; }
+	void setDaño(int daño) {
+		this->salud-=daño;
+	}
 };

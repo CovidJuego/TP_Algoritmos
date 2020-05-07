@@ -228,19 +228,20 @@ namespace TPAlgoritmos {
 				 buffer = context->Allocate(g, ClientRectangle);
 
 				 //Sprites
-				 sprites = gcnew array<Bitmap^>(23);
+				 sprites = gcnew array<Bitmap^>(25);
 				 sprites[0] = gcnew Bitmap("ChocolateCity.jpg"); sprites[1] = gcnew Bitmap("StephMarlonso.png");
 				 sprites[2] = gcnew Bitmap("ImagenTemp1.png");	sprites[3] = gcnew Bitmap("ImagenTemp2.png");
 				 sprites[4] = gcnew Bitmap("Moto.png");			sprites[5] = gcnew Bitmap("StephEnMoto.png");
 				 sprites[6] = gcnew Bitmap("Doctor.png");		sprites[7] = gcnew Bitmap("Cono.png");
-				 sprites[8] = gcnew Bitmap("Porra.png");			sprites[9] = gcnew Bitmap("SubFusil.png");
+				 sprites[8] = gcnew Bitmap("Porra.png");		sprites[9] = gcnew Bitmap("SubFusil.png");
 				 sprites[10] = gcnew Bitmap("Pistola.png");		sprites[11] = gcnew Bitmap("Fusil.png");
 				 sprites[12] = gcnew Bitmap("Icono1.png");		sprites[13] = gcnew Bitmap("Icono2.png");
 				 sprites[14] = gcnew Bitmap("Icono3.png");		sprites[15] = gcnew Bitmap("Icono4.png");
 				 sprites[16] = gcnew Bitmap("Icono5.png");		sprites[17] = gcnew Bitmap("Adn.png");
 				 sprites[18] = gcnew Bitmap("Virus.png");		sprites[19] = gcnew Bitmap("Quina.png");
 				 sprites[20] = gcnew Bitmap("Icono6.png");		sprites[21] = gcnew Bitmap("Icono7.png");
-				 sprites[22] = gcnew Bitmap("Icono8.png");
+				 sprites[22] = gcnew Bitmap("Icono8.png");		sprites[23] = gcnew Bitmap("policia.png");
+				 sprites[24] = gcnew Bitmap("policiaAlerta.png");
 
 				 //Juego
 				 juego = new Juego(buffer->Graphics, sprites, Controls);
@@ -302,8 +303,6 @@ namespace TPAlgoritmos {
 				 timer1->Start();
 			 }
 			 void setItemVisible(String^ s) {
-				 juego->getItem1()->setShow(s == "Circulo");
-				 juego->getItem2()->setShow(s == "Cuadrado");
 				 juego->getItem(0)->setShow(s == "Cono");
 				 juego->getItem(1)->setShow(s == "Porra");
 				 juego->getItem(2)->setShow(s == "SubFusil");
@@ -366,15 +365,7 @@ namespace TPAlgoritmos {
 			juego->getPersonaje()->der = true;
 		}
 		if (e->KeyCode == Keys::E) {
-			if (interaction_txt->Text == "Pulse [E] para obtener Circulo") {
-				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[2], "Circulo");
-				juego->getItem1()->setEstado(Estado::Inventariado);
-			}
-			else if (interaction_txt->Text == "Pulse [E] para obtener Cuadrado") {
-				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[3], "Cuadrado");
-				juego->getItem2()->setEstado(Estado::Inventariado);
-			}
-			else if (interaction_txt->Text == "Pulse [E] para obtener Cono") {
+			if (interaction_txt->Text == "Pulse [E] para obtener Cono") {
 				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[12], "Cono");
 				juego->getItem(0)->setEstado(Estado::Inventariado);
 			}
@@ -475,7 +466,7 @@ namespace TPAlgoritmos {
 		menu = false;
 	}
 	private: System::Void Guardar_btn_Click(System::Object^  sender, System::EventArgs^  e) {
-		//Codigo de Stephano
+		juego->GuardarPartida();
 	}
 	private: System::Void Salir_btn_Click(System::Object^  sender, System::EventArgs^  e) {
 		ActivarMenu(false);
