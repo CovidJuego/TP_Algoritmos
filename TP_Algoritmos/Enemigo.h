@@ -1,12 +1,19 @@
 #pragma once
 #include "Base.h"
-class Enemigo : Base {
+class Enemigo : Base<double,int> {
 private:
 	double speed;
 	int i_x, i_y;
 public:
 	bool arr, aba, izq, der, alerta;
-	Enemigo(Bitmap^ sprite, Graphics ^g, int tipo) : Base(50, 50, 22, 31) {
+	Enemigo(Bitmap^ sprite, Graphics ^g, int tipo, int zona) : Base() {
+		//Dimensiones Base
+		if (zona == 1) { x = g->VisibleClipBounds.Left + 10; y = g->VisibleClipBounds.Top + 10; }
+		if (zona == 2) { x = g->VisibleClipBounds.Right - 10; y = g->VisibleClipBounds.Top + 10; }
+		if (zona == 3) { x = g->VisibleClipBounds.Left + 10; y = g->VisibleClipBounds.Bottom - 10; }
+		if (zona == 4) { x = g->VisibleClipBounds.Right - 10; y = g->VisibleClipBounds.Bottom - 10; }
+		ancho = 22;
+		alto = 31;
 		//Dimensiones
 		this->newAncho = sprite->Width / 3;
 		this->newAlto = sprite->Height / 4;
@@ -84,8 +91,8 @@ public:
 
 		}
 		else {
-			cout << "X: " << x_personaje << " Y: " << y_personaje;
-			cout << "X: " << x << " Y: " << y;
+			std::cout << "X: " << x_personaje << " Y: " << y_personaje;
+			std::cout << "X: " << x << " Y: " << y;
 			if (x + dx > x_personaje) {
 				this->dx = -speed;
 				i_y = 3;

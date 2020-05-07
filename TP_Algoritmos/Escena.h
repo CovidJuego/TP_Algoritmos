@@ -1,6 +1,6 @@
 #pragma once
 #include "Base.h"
-class Escena : public Base
+class Escena : public Base<float, int>
 {
 private:
 	int difX, difY; /*Diferencia entre donde empieza a imprimirse el mapa y donde empieza a imprimirse el personaje*/

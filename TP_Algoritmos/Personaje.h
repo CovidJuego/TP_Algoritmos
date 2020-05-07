@@ -2,13 +2,14 @@
 #include "Base.h"
 #include "InventaryController.h"
 #include "Dialogo.h"
+#include "Colisiones.h"
 
-class Personaje : public Base 
+class Personaje : public Base<float, int>
 {
 private:
 	float speed;
 	float posItemX, posItemY;
-	bool abrirDialogo;
+
 public:
 	//Atributos publicos
 	bool arr, aba, izq, der, enVehiculo, noMoverse;
@@ -23,19 +24,17 @@ public:
 		this->newAlto = sprite->Height / 4;
 		this->ancho = newAncho;		//ancho del zoom de la imagen
 		this->alto = newAlto;		//alto del zoom de la imagen
-
-		//Movimiento
-		arr = aba = izq = der = false;	//teclas
-		enVehiculo = noMoverse = abrirDialogo =	false;	//determinan si NO tiene libertad para moverse
-		speed = 20;
-		//Enemigos Cerca?
-		enemigosCerca = false;
 		//x,y mapa
 		x_mapa = x;
 		y_mapa = y;
 		//x,y cuando hay enemigos cerca
 		x_pantalla = 345;
 		y_pantalla = 115;
+		//Movimiento
+		arr = aba = izq = der = false;	//teclas
+		enVehiculo = noMoverse =	false;	//determinan si NO tiene libertad para moverse
+		speed = 20;
+
 		//Region inicial del Sprite
 		i_x = 0;
 		i_y = 2;
@@ -72,12 +71,11 @@ public:
 		}
 	}
 
-	void Update(Graphics ^g, Bitmap^ sprite, Control^ c, String^ t, int n, Dialogo *d) {
+	void Update(Graphics ^g, Bitmap^ sprite, Colisiones *col) {
 		cambiarValores();
 		Movimiento(g);
+		ChequearPared(col);
 		Imprimir(g, sprite);
-		if (this->enVehiculo) return;
-		AbrirDialogo(c, t, n, d);
 	}
 
 	void Movimiento(Graphics ^g) {
@@ -131,6 +129,13 @@ public:
 			x_mapa += dx;
 			y_mapa += dy;
 		}
+
+	}
+	void ChequearPared(Colisiones* colisiones) {
+		if (colisiones->CheckColision(this)) {
+			this->dx = 0;
+			this->dy = 0;
+		}
 	}
 
 	void Imprimir(Graphics ^g, Bitmap^ Sprite) {
@@ -146,23 +151,9 @@ public:
 		}
 	}
 	Rectangle rect(Graphics^g) {
-		return Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2), g->VisibleClipBounds.Bottom / 2 - (alto / 2), ancho, alto);
+		return Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2) + this->dx, g->VisibleClipBounds.Bottom / 2 - (alto / 2) + this->dy, ancho, alto);
 	}
-
-	void AbrirDialogo(Control^ c, String^ t, int n, Dialogo* dialogo) {
-		if (abrirDialogo) {
-			dialogo->AbrirConversacion(c, t, n, this->x - n, this->y + ancho + 10);
-			this->noMoverse = true;
-		}
-	}
-	void CerrarDialogo(Control^ c, int bottom, Dialogo* dialogo, bool &ultimoDialogo, bool ultimo = false) {
-		dialogo->CerrarConversacion(c, bottom);
-		this->noMoverse = false;
-		ultimoDialogo = ultimo;
-	}
-
-	void setDialogo(bool a) { abrirDialogo = a; }
 	float getAncho() { return ancho; }
 	float getAlto() { return alto; }
-	bool getDialogo() { return abrirDialogo; }
+	int getI_Y() { return i_y; }
 };

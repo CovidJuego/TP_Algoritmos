@@ -1,45 +1,65 @@
 #pragma once
+#include "Generador_Enemigos.h"
 #include "Personaje.h"
 #include "Item.h"
 #include "Escena.h"
 #include "Vehiculo.h"
 #include "Dialogo.h"
-#include "Enemigo.h"
 #include "Colisiones.h"
 #include "Doctor.h"
-#include<time.h>
+
 class Juego
 {
 private:
+	//Clases
 	Personaje *steph;
 	Item *item;
 	Item *item2;
+
+	Item *adn;
+	Item *counter;
+	Item *quina;
+	list<Item*> items;
+
 	Escena *mapa;
 	Dialogo* dialogo;
 	Colisiones *colisiones;
 	Doctor *doctor;
 	Vehiculo *moto;
-	Enemigo * policia;
-	bool ultimoDialogo;
-	//Variables Especiales
-	int * contador;//Contador para reedifinir la direccion de los enemigos
+	
+	Generador_Enemigos * generador;
+
+	//Otros
+	int conversaciones;
+	bool haConversado;	//determina si steph ya ha conversado con el Dock
+	int * contador;
 public:
 	Juego(Graphics^g, array<Bitmap^>^sprites, Control::ControlCollection^ Controls){
 		dialogo = new Dialogo();
-		steph = new Personaje(sprites[1], Controls, g, /*6900, 700*/9000, 4095);
-		item = new Item(steph, 150, 0);
+		steph = new Personaje(sprites[1], Controls, g /*6900, 700*/,8900, 4000);
+		item = new Item(steph, 9000,3950);
 		item2 = new Item(steph, 100, 200);
-		mapa = new Escena();
-		moto = new Vehiculo(sprites[4], 6900, 750);
-		colisiones = new Colisiones();
-		doctor = new Doctor(sprites[6], 9205, 4095);
-		policia = new Enemigo(sprites[7], g, 1);
-		ultimoDialogo = false;
+
+		adn = new Item(steph, 9000, 3800, 3950, 10, 1, sprites[17]);
+		counter = new Item(steph, 9000, 3870, 3950, 10, 1, sprites[18]);
+		quina = new Item(steph, 9000, 3920, 3950, 10, 1, sprites[19]);
+
+		generador = new Generador_Enemigos();
 		contador = new int;
 		*contador = 0;
-		for (int i = 0; i < 4; i++) {
-			colisiones->AgregarColision(i * 10, i * 10, i + 10, i + 10);
-		}
+
+		mapa = new Escena();
+		moto = new Vehiculo(sprites[4]/*, 6900, 750*/);
+		colisiones = new Colisiones();
+		doctor = new Doctor(sprites[6], 9205, 4095);
+		items = list<Item*>();
+		items.push_back(new Item(steph, 9000, 4000, 13, 30, 8, sprites[7]));	//items[0] Cono
+		items.push_back(new Item(steph, 9000, 4070, 13, 30, 8, sprites[8]));		//items[1] Porra
+		items.push_back(new Item(steph, 9000, 4150, 4, 28, 4, sprites[9]));		//items[2] SubFusil
+		items.push_back(new Item(steph, 9000, 4210, 18, 35, 4, sprites[10]));	//items[3] Pistola
+		items.push_back(new Item(steph, 9000, 4290, 8, 40, 4, sprites[11]));	//items[4] Fusil
+		conversaciones = 0;
+		haConversado = false;
 	}
 	~Juego(){
 		delete steph;
@@ -48,77 +68,130 @@ public:
 		delete doctor;
 		delete moto;
 		delete colisiones;
-		delete contador;
 	}
-	void Update(Graphics^ g, array<Bitmap^>^sprites, Control^ interaction_txt) {
+
+	void generarEnemigos(Bitmap^ sprite, Graphics ^g, int tipo) {
+		generador->aparecer_enemigos(sprite, g, tipo);
+	}
+
+	void Update(Graphics^ g, array<Bitmap^>^sprites, Control^ interaction_txt, array<String^>^dialogos) {
 
 		mapa->Update(g, sprites[0], steph->getX(), steph->getY());
 
-		item->Update(g, sprites[2], steph, interaction_txt, "Pulse [E] para obtener Circulo");
-		item2->Update(g, sprites[3], steph, interaction_txt, "Pulse [E] para obtener Cuadrado");
+		item->Update(g, sprites[2], sprites[2], steph, interaction_txt, "Pulse [E] para obtener Circulo");
+		item2->Update(g, sprites[3], sprites[3], steph, interaction_txt, "Pulse [E] para obtener Cuadrado");
+		
+		adn->Update(g, sprites[17], sprites[17], steph, interaction_txt, "Pulse [E] para obtener ADN");
+		counter->Update(g, sprites[18], sprites[18], steph, interaction_txt, "Pulse [E] para obtener CounterOmega");
+		quina->Update(g, sprites[19], sprites[19], steph, interaction_txt, "Pulse [E] para obtener Quina");
+
 		moto->Update(g, sprites[4], sprites[5], steph, interaction_txt, "Pulse [E] para subir a la moto", "Pulse [E] para bajarse de la moto");
-		steph->Update(g, sprites[1], interaction_txt, "Hola webon que tal", 120, dialogo);
-		doctor->Update(g, sprites[6], steph, interaction_txt, "Hola Amiguito", 100, dialogo);
-		colisiones->Update(g, steph);
-		if (policia->alerta == false) {
-			policia->Update(g, sprites[7], steph->getX_pantalla(), steph->getY_pantalla());
+		steph->Update(g, sprites[1], colisiones);
+
+		if (generador->alerta() == false) {
+			generador->Update(g, sprites[23], steph->getX_pantalla(), steph->getY_pantalla());
 			steph->enemigosCerca = false;
 		}
 		else {
-			policia->Update(g, sprites[8], steph->getX_pantalla(), steph->getY_pantalla());
+			generador->Update(g, sprites[24], steph->getX_pantalla(), steph->getY_pantalla());
 			steph->enemigosCerca = true;
+		}
+		//Recorremos la lista
+		list<Item*>::iterator it = items.begin();
+		while (it != items.end()) {
+			(*it++)->Update(g, sprites[7], sprites[7], steph, interaction_txt, "Pulse [E] para obtener Cono", true);
+			(*it++)->Update(g, sprites[8], sprites[8], steph, interaction_txt, "Pulse [E] para obtener Porra", true);
+			(*it++)->Update(g, sprites[9], sprites[2], steph, interaction_txt, "Pulse [E] para obtener SubFusil");
+			(*it++)->Update(g, sprites[10], sprites[2], steph, interaction_txt, "Pulse [E] para obtener Pistola");
+			(*it++)->Update(g, sprites[11], sprites[2], steph, interaction_txt, "Pulse [E] para obtener Fusil");
+		}
+		doctor->Update(g, sprites[6], steph);
+		colisiones->Update(g, steph);
+
+		if (doctor->DetectarColision(steph, g) && (conversaciones < dialogos->Length) && dialogos[conversaciones] != " ") {
+			steph->noMoverse = true;
+			dialogo->AbrirConversacion(interaction_txt, dialogos[conversaciones], steph->getX() - 20, steph->getY() + 50);
+		}
+		else {
+			steph->noMoverse = false;
 		}
 		/*FUNCION QUE DETERMINA ALEATORIDAD DE LOS ENEMIGOS*/
 		if (*contador == 20) {
 			srand(time(NULL));
 			Random r;
 			int direccion = r.Next(1, 4);
-			Console::SetCursorPosition(7, 8); cout << "Direccion: " << direccion;
-			policia->reiniciarDirecciones();
+			Console::SetCursorPosition(7, 8); std::cout << "Direccion: " << direccion;
+			generador->reiniciarDirecciones();
 			if (direccion == 1) {
-				policia->arr = true;
+				generador->dir(1);
 			}
 			else if (direccion == 2) {
-				policia->der = true;
+				generador->dir(2);
 			}
 			else if (direccion == 3) {
-				policia->izq = true;
+				generador->dir(3);
 			}
 			else {
-				policia->aba = true;
+				generador->dir(4);
 			}
 			*contador = 0;
 		}
 		*contador += 1;
-		item->DibujarRectangulo(g);
+		/*item->DibujarRectangulo(g);
 		item2->DibujarRectangulo(g);
 		steph->DibujarRectangulo2(g);
 		moto->DibujarRectangulo(g);
 		doctor->DibujarRectangulo(g);
-
+		for (Item* i : items) { i->DibujarRectangulo(g); }*/
+		
 		dialogo->Animacion(interaction_txt, g, steph);
-
-		//Console::SetCursorPosition(0, 0); cout << "Mapa: " << mapa->getX() << " / " << mapa->getY();
-		Console::SetCursorPosition(0, 2); cout << "Personaje: " << steph->getX() << " / " << steph->getY();
-		//Console::SetCursorPosition(0, 3); cout << "Circulo: " << item->getX() << " / " << item->getY();*/
 	}
-	void CambiarTurnoDeHablar(Control^ c, Graphics^ g) {
-		if (doctor->getHablando()) {
-			doctor->setHablando(false);
-			doctor->CerrarDialogo(c, g->VisibleClipBounds.Bottom, dialogo, ultimoDialogo);
-			steph->setDialogo(true);
-		}
-		if (steph->getDialogo()) {
-			doctor->setHablando(true);
-			steph->setDialogo(false);
-			steph->CerrarDialogo(c, g->VisibleClipBounds.Bottom, dialogo, ultimoDialogo);
-		}
+	Item* getItem(int pos) {
+		list<Item*>::iterator it = items.begin();
+		while (pos > 0) { (*it++); pos--; }
+		return (*it);
 	}
-
-	bool alguienHablando() { return (doctor->getHablando() || steph->getDialogo()); }
+	bool getHaConversado() { return haConversado; }
 	Personaje* getPersonaje() { return steph; }
 	Item* getItem1() { return item; }
 	Item* getItem2() { return item2; }
+	Item* getADN() { return adn; }
+	Item* getCounter() { return counter; }
+	Item* getQuina() { return quina; }
 	Vehiculo* getMoto() { return moto; }
-	Dialogo *getFunciones() { return dialogo; }
+	Dialogo *getDialogo() { return dialogo; }
+	void SiguienteDialogo(Control^c, Graphics^ g, array<String^>^ dialogos) {
+		dialogo->CerrarConversacion(c, g->VisibleClipBounds.Bottom);
+		if (dialogos[conversaciones] != " " && conversaciones <= dialogos->Length-2) {
+			conversaciones++;
+		}
+		if (dialogos[conversaciones] == " ") {
+			haConversado = true;
+		}
+	}
+	void HabilitarDialogo() {
+			conversaciones++;
+			haConversado = false;
+	}
+	void TirarItem(Bitmap^ sprite) {
+		if (item->getShow()) {
+			item->TirarItem(steph);
+		}
+		else if (item2->getShow()) {
+			item2->TirarItem(steph);
+		}
+		else {
+			int i = 0;
+			for (list<Item*>::iterator it = items.begin(); it != items.end(); it++) {
+				if ((*it)->getShow()) {
+					if (i < 2) {
+						(*it)->TirarItem(steph, sprite);	//paso el mismo sprite porque solo necesito las dimensiones
+					}											//que son iguales en ambos (Cono y Porra)
+					else
+						(*it)->TirarItem(steph);
+				}
+				i++;
+			}
+		}
+	}
 };
