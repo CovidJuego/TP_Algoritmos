@@ -65,7 +65,8 @@ namespace TPAlgoritmos {
 
 			 //Arrays
 			 array<Bitmap^> ^sprites;
-			 array<Button^>^inventaryButtons;
+			 array<Button^> ^inventaryButtons;
+			 array<String^> ^dialogos;
 
 			 //Game
 			 Juego *juego;
@@ -172,7 +173,7 @@ namespace TPAlgoritmos {
 			buffer = context->Allocate(g, ClientRectangle);
 			
 			//Sprites
-			sprites = gcnew array<Bitmap^>(7);
+			sprites = gcnew array<Bitmap^>(17);
 			sprites[0] = gcnew Bitmap("ChocolateCity.jpg");
 			sprites[1] = gcnew Bitmap("StephMarlonso.png");
 			sprites[2] = gcnew Bitmap("ImagenTemp1.png");
@@ -180,6 +181,16 @@ namespace TPAlgoritmos {
 			sprites[4] = gcnew Bitmap("Moto.png");
 			sprites[5] = gcnew Bitmap("StephEnMoto.png");
 			sprites[6] = gcnew Bitmap("Doctor.png");
+			sprites[7] = gcnew Bitmap("Cono.png");
+			sprites[8] = gcnew Bitmap("Porra.png");
+			sprites[9] = gcnew Bitmap("SubFusil.png");
+			sprites[10] = gcnew Bitmap("Pistola.png");
+			sprites[11] = gcnew Bitmap("Fusil.png");
+			sprites[12] = gcnew Bitmap("Icono1.png");
+			sprites[13] = gcnew Bitmap("Icono2.png");
+			sprites[14] = gcnew Bitmap("Icono3.png");
+			sprites[15] = gcnew Bitmap("Icono4.png");
+			sprites[16] = gcnew Bitmap("Icono5.png");
 
 			//Juego
 			juego = new Juego(buffer->Graphics, sprites, Controls);
@@ -191,6 +202,23 @@ namespace TPAlgoritmos {
 				inventaryButtons[i]->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
 				inventaryButtons[i]->TabStop = false;
 			}
+
+			//Dialogos
+			dialogos = gcnew array<String^>(13);
+			dialogos[0] = "Disculpe, es usted el Dr.Flint?";
+			dialogos[1] = "Pero claro que soy el Dr. Flint, no has visto mi bata?";
+			dialogos[2] = "Sospecho que estas aquí porque me vas a ayudar a terminar con este caos";
+			dialogos[3] = "Si, ya no aguanto más";
+			dialogos[4] = "Ok, pero no va ser sencillo";
+			dialogos[5] = "Yo podre con todo, no se preocupe";
+			dialogos[6] = "Bueno, he aquí los objetos que necesito: una quina, el adn de un paciente con Covid-19, y el CounterOmega-19";
+			dialogos[7] = "Entendido, hasta luego doctor";
+			dialogos[8] = "Ve con Dios";
+			dialogos[9] = " ";
+			dialogos[10] = "Doctor! Encontre los objetos";
+			dialogos[11] = "Excelente. Es hora de salvar al mundo al fin";
+			dialogos[12] = "Podre morir en paz";
+
 
 			//Ajustes iniciales
 			this->axWindowsMediaPlayer1->Location = Point(0, 0);
@@ -207,6 +235,16 @@ namespace TPAlgoritmos {
 			interaction_txt->Location = Point(0, g->VisibleClipBounds.Bottom + 1);
 			timer2->Stop();
 			timer1->Start();
+			delete axWindowsMediaPlayer1;
+		}
+		void setItemVisible(String^ s) {
+			juego->getItem1()->setShow(s == "Circulo");
+			juego->getItem2()->setShow(s == "Cuadrado");
+			juego->getItem(0)->setShow(s == "Cono");
+			juego->getItem(1)->setShow(s == "Porra");
+			juego->getItem(2)->setShow(s == "SubFusil");
+			juego->getItem(3)->setShow(s == "Pistola");
+			juego->getItem(4)->setShow(s == "Fusil");
 		}
 
 #pragma endregion
@@ -219,7 +257,7 @@ namespace TPAlgoritmos {
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 		buffer->Graphics->Clear(Color::Black);
 
-		juego->Update(buffer->Graphics, sprites, interaction_txt);
+		juego->Update(buffer->Graphics, sprites, interaction_txt, dialogos);
 
 		buffer->Render(g);
 	}
@@ -249,6 +287,26 @@ namespace TPAlgoritmos {
 				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[3], "Cuadrado");
 				juego->getItem2()->setEstado(Estado::Inventariado);
 			}
+			if (interaction_txt->Text == "Pulse [E] para obtener Cono") {
+				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[12], "Cono");
+				juego->getItem(0)->setEstado(Estado::Inventariado);
+			}
+			if (interaction_txt->Text == "Pulse [E] para obtener Porra") {
+				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[13], "Porra");
+				juego->getItem(1)->setEstado(Estado::Inventariado);
+			}
+			if (interaction_txt->Text == "Pulse [E] para obtener SubFusil") {
+				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[14], "SubFusil");
+				juego->getItem(2)->setEstado(Estado::Inventariado);
+			}
+			if (interaction_txt->Text == "Pulse [E] para obtener Pistola") {
+				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[15], "Pistola");
+				juego->getItem(3)->setEstado(Estado::Inventariado);
+			}
+			if (interaction_txt->Text == "Pulse [E] para obtener Fusil") {
+				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[16], "Fusil");
+				juego->getItem(4)->setEstado(Estado::Inventariado);
+			}
 			if (interaction_txt->Text == "Pulse [E] para subir a la moto") {
 				juego->getMoto()->Subir(juego->getPersonaje());
 			}
@@ -257,8 +315,10 @@ namespace TPAlgoritmos {
 			}
 		}
 		if (e->KeyCode == Keys::Space) {
-			if (juego->alguienHablando())
-				juego->CambiarTurnoDeHablar(interaction_txt, buffer->Graphics);
+			juego->SiguienteDialogo(interaction_txt, buffer->Graphics);
+		}
+		if (e->KeyCode == Keys::C) {
+			juego->TirarItem(sprites[7]);
 		}
 	}
 	private: System::Void MyForm_KeyUp(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
@@ -282,18 +342,7 @@ namespace TPAlgoritmos {
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
 		interaction_txt->Enabled = true;
 		Control ^b = (Control^)sender;
-		if (b->Name == "Circulo") {
-			juego->getItem1()->setShow(true);
-			juego->getItem2()->setShow(false);
-		}
-		else if (b->Name == "Cuadrado") {
-			juego->getItem1()->setShow(false);
-			juego->getItem2()->setShow(true);
-		}
-		else {
-			juego->getItem1()->setShow(false);
-			juego->getItem2()->setShow(false);
-		}
+		setItemVisible(b->Name);
 		interaction_txt->Focus();
 		interaction_txt->Enabled = false;
 	}

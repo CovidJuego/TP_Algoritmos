@@ -10,7 +10,7 @@ private:
 public:
 	Dialogo(){
 		conversacionAbierta = false;
-		velocidadDeAnimacion = 5;
+		velocidadDeAnimacion = 10;
 		x = y = posXprint = posYprint = 0;
 	}
 	~Dialogo(){}

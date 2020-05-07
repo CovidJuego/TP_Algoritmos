@@ -1,6 +1,15 @@
 #pragma once
+#include <stack>
+#include <queue>
+#include <list>
 #include <iostream>
-using std::cout;
+#include <functional>
+using std::queue;
+using std::stack;
+using std::list;
+using std::function;
+using std::string;
+
 using namespace System;
 using namespace System::Drawing;
 using namespace System::Windows::Forms;
@@ -19,8 +28,12 @@ public:
 	float getY() { return this->y; }
 	float getDX() { return this->dx; }
 	float getDY() { return this->dy; }
+	float getPosXPrint() { return posXprint; }
+	float getPosYPrint() { return posYprint; }
 	void setX(float x) { this->x = x; }
 	void setY(float y) { this->y = y; }
+	void setDX(float dx) { this->dx = dx; }
+	void setDY(float dy) { this->dy = dy; }
 	virtual Rectangle rect() { return Rectangle(posXprint, posYprint, ancho, alto); }	//para colisiones
 	virtual Rectangle rect(Graphics^g) { return Rectangle(); }			//x2
 	void DibujarRectangulo(Graphics^g) { g->DrawRectangle(Pens::Red, rect()); }
