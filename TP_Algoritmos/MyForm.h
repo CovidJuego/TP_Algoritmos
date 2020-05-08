@@ -66,7 +66,7 @@ namespace TPAlgoritmos {
 			 //Arrays
 			 array<Bitmap^> ^sprites;
 			 array<Button^> ^inventaryButtons;
-			 array<String^> ^dialogos;
+			 queue<String^> *dialogos;
 
 			 //Game
 			 Juego *juego;
@@ -253,37 +253,37 @@ namespace TPAlgoritmos {
 					 inventaryButtons[i]->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
 					 inventaryButtons[i]->TabStop = false;
 				 }
-
 				 //Dialogos
-				 dialogos = gcnew array<String^>(28);
-				 dialogos[0] = "Disculpe, es usted el Dr. Flint?S";
-				 dialogos[1] = "Pero claro que soy el Dr. Flint, no has visto mi bata?D";
-				 dialogos[2] = "Sospecho que estas aquí porque me vas a ayudar a terminar con el caos de este mundoD";
-				 dialogos[3] = "Si, ya no aguanto másS";
-				 dialogos[4] = "Ok, pero no va ser sencilloD";
-				 dialogos[5] = "Yo podre con todo, no se preocupeS";
-				 dialogos[6] = "Bueno, he aquí los objetos que necesito: una quina, el ADN de un paciente con Covid-19, y el CounterOmega-19D";
-				 dialogos[7] = "Primero, anda al hospital de la ciudad, ahí encontraras al paciente. Cuidado con los policías que lo cuidanD";
-				 dialogos[8] = "EntendidoS";
-				 dialogos[9] = " ";
-				 dialogos[10] = "Aquí esta docS";
-				 dialogos[11] = "Perfecto. Ahora ve al bosque. Ahí estará la quina con grandes sustancia curativasD";
-				 dialogos[12] = "Al bosque? Este va ser sencilloS";
-				 dialogos[13] = "No te confíes. Ve con DiosD";
-				 dialogos[14] = " ";
-				 dialogos[15] = "Uf, volví. Tuve que arreglar un puente y fue agotadorS";
-				 dialogos[16] = "Jajaja, te dije.D";
-				 dialogos[17] = "Bueno, el ultimo objeto es el más difícilD";
-				 dialogos[18] = "Tienes que ir al desierto. Por ahí, se cayó un helicóptero con el CounterOmega-19, un ingrediente muy importante para la curaD";
-				 dialogos[19] = "Pero cuidado, el helicóptero lo atacaron unos mercenarios. Deben estar por ahí.D";
-				 dialogos[20] = "Tranquilo doc, me las arreglareS";
-				 dialogos[21] = " ";
-				 dialogos[22] = "Doc ya está la última piezaS";
-				 dialogos[23] = "Magnifico. Podre hacer la cura al finD";
-				 dialogos[24] = "Gracias a ti, habrá un mañana para todosD";
-				 dialogos[25] = "Es hora de salvar al mundo al finD";
-				 dialogos[26] = "Podre morir en pazD";
-				 dialogos[27] = " ";
+				 dialogos = new queue<String^>();
+				 dialogos->push("Disculpe, es usted el Dr. Flint?S");
+				 dialogos->push("Disculpe, es usted el Dr. Flint?S");
+				 dialogos->push("Pero claro que soy el Dr. Flint, no has visto mi bata?D");
+				 dialogos->push("Sospecho que estas aquí porque me vas a ayudar a terminar con el caos de este mundoD");
+				 dialogos->push("Si, ya no aguanto másS");
+				 dialogos->push("Ok, pero no va ser sencilloD");
+				 dialogos->push("Yo podre con todo, no se preocupeS");
+				 dialogos->push("Bueno, he aquí los objetos que necesito: una quina, el ADN de un paciente con Covid-19, y el CounterOmega-19D");
+				 dialogos->push("Primero, anda al hospital de la ciudad, ahí encontraras al paciente. Cuidado con los policías que lo cuidanD");
+				 dialogos->push("EntendidoS");
+				 dialogos->push(" ");
+				 dialogos->push("Aquí esta docS");
+				 dialogos->push("Perfecto. Ahora ve al bosque. Ahí estará la quina con grandes sustancia curativasD");
+				 dialogos->push("Al bosque? Este va ser sencilloS");
+				 dialogos->push("No te confíes. Ve con DiosD");
+				 dialogos->push(" ");
+				 dialogos->push("Uf, volví. Tuve que arreglar un puente y fue agotadorS");
+				 dialogos->push("Jajaja, te dije.D");
+				 dialogos->push("Bueno, el ultimo objeto es el más difícilD");
+				 dialogos->push("Tienes que ir al desierto. Por ahí, se cayó un helicóptero con el CounterOmega-19, un ingrediente muy importante para la curaD");
+				 dialogos->push("Pero cuidado, el helicóptero lo atacaron unos mercenarios. Deben estar por ahí.D");
+				 dialogos->push("Tranquilo doc, me las arreglareS");
+				 dialogos->push(" ");
+				 dialogos->push("Doc ya está la última piezaS");
+				 dialogos->push("Magnifico. Podre hacer la cura al finD");
+				 dialogos->push("Gracias a ti, habrá un mañana para todosD");
+				 dialogos->push("Es hora de salvar al mundo al finD");
+				 dialogos->push("Podre morir en pazD");
+				 dialogos->push(" ");
 
 				 //Ajustes iniciales
 				 played = false;
@@ -394,17 +394,17 @@ namespace TPAlgoritmos {
 			if (interaction_txt->Text == "Pulse [E] para obtener ADN" && juego->getHaConversado()) {
 				juego->getPersonaje()->inventary->AgregarElemento(inventaryButtons, sprites[20], "ADN");
 				juego->getADN()->setEstado(Estado::Inventariado);
-				juego->HabilitarDialogo();
+				juego->HabilitarDialogo(dialogos);
 			}
 			else if (interaction_txt->Text == "Pulse [E] para obtener CounterOmega"&& juego->getHaConversado()) {
 				juego->getPersonaje()->inventary->AgregarElemento(inventaryButtons, sprites[21], "CounterOmega");
 				juego->getCounter()->setEstado(Estado::Inventariado);
-				juego->HabilitarDialogo();
+				juego->HabilitarDialogo(dialogos);
 			}
 			else if (interaction_txt->Text == "Pulse [E] para obtener Quina"&& juego->getHaConversado()) {
 				juego->getPersonaje()->inventary->AgregarElemento(inventaryButtons, sprites[22], "Quina");
 				juego->getQuina()->setEstado(Estado::Inventariado);
-				juego->HabilitarDialogo();
+				juego->HabilitarDialogo(dialogos);
 			}
 		}
 		if (e->KeyCode == Keys::Space) {

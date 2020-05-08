@@ -32,7 +32,7 @@ public:
 		i_y = 2;
 
 		//Estado del enemigo
-		estado = Ninguno;
+		estado = Patrulla;
 		alertado = false;
 
 		//Otros ajustes
@@ -44,11 +44,11 @@ public:
 
 	void Update(Graphics ^g, Bitmap^ sprite, Base *otro) {
 		Estado(otro);
-		Movimiento(g);
+		Movimiento(g, otro);
 		Imprimir(g, sprite, otro);
 		movimientos++;
 	}
-
+	bool getAlerta() { return alertado; }
 	void Estado(Base *personaje) {
 		if (alertado) return;
 		int dif = 0;	//determina si el personaje esta arriba o abajo o izquierda o derecha del jugador
@@ -70,20 +70,35 @@ public:
 		estado = Patrulla;
 	}
 
-	void Movimiento(Graphics ^g) {
-		int k = GenerarRandom(4, 9);
-		if (movimientos % k == 0) {	//Cada 5 movimientos se desplaza en X
-			this->dy = 0;
-			do {
-				dx = GenerarRandom(-1, 2) * speed;	//dx = -speed || dx = speed
-			} while (dx == 0);
+	void Movimiento(Graphics ^g, Base *otro) {
+		if (!alertado) {
+			int k = GenerarRandom(4, 9);
+			if (movimientos % k == 0) {	//Cada 5 movimientos se desplaza en X
+				this->dy = 0;
+				do {
+					dx = GenerarRandom(-1, 2) * speed;	//dx = -speed || dx = speed
+				} while (dx == 0);
+			}
+			if (movimientos % (k * 2) == 0) {	//Cada 10 movimientos se desplaza en Y
+				this->dx = 0;
+				do {
+					dy = GenerarRandom(-1, 2) * speed;	//dy = -speed || dy = speed
+				} while (dy == 0);
+			}
 		}
-		if (movimientos % (k*2) == 0) {	//Cada 10 movimientos se desplaza en Y
-			this->dx = 0;
-			do {
-				dy = GenerarRandom(-1, 2) * speed;	//dy = -speed || dy = speed
-			} while (dy == 0);
+		if (x > otro->getX()) {
+			this->dx = -speed;
 		}
+		else {
+			this->dx = speed;
+		}
+		if (y < otro->getY()) {
+			this->dy = speed;
+		}
+		else {
+			this->dy = -speed;
+		}
+
 		function<int(int, int)>getNewI_Y = [&](int dx, int dy) {
 			if (dx > 0) { return 1; }
 			if (dx < 0) { return 3; }

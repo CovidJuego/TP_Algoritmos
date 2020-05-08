@@ -19,7 +19,7 @@ public:
 			lista->push_back(aux);
 		}
 	}
-	void Update(Graphics ^g, Bitmap^ sprite, Personaje* personaje, list<Item*> *balas, function<void(Item*tirable)> removeItem) {
+	void Update(Graphics ^g, Bitmap^ sprite, Bitmap^ sprite2, Personaje* personaje, list<Item*> *balas, function<void(Item*tirable)> removeItem) {
 		if (lista->size() > 0) {
 			for (Enemigo* e : (*lista)) {
 				bool chequeado = false;
@@ -34,7 +34,14 @@ public:
 				if (e->CheckColision(personaje, g) && !personaje->invensible) {	//Colision con personaje
 					personaje->setDaño(1); personaje->invensible = true;
 				}
-				else e->Update(g, sprite, personaje);
+				else {
+					if (e->getAlerta()) {
+						e->Update(g, sprite2, personaje);
+					}
+					else {
+						e->Update(g, sprite, personaje);
+					}
+				}
 			}
 		}
 		EliminarCaidos();
