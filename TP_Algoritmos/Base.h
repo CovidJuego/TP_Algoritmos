@@ -9,6 +9,10 @@ using std::stack;
 using std::list;
 using std::function;
 using std::string;
+using std::fstream;
+using std::ifstream;
+using std::ofstream;
+using std::function;
 
 using namespace System;
 using namespace System::Drawing;
@@ -22,10 +26,10 @@ protected:
 	R i_x, i_y;
 
 public:
-	Base(int x = 0, int y = 0, int ancho = 0, int alto = 0, int dx = 0, int dy = 0) : 
+	Base(int x = 0, int y = 0, int ancho = 0, int alto = 0, int dx = 0, int dy = 0) :
 		x(x), y(y), ancho(ancho), alto(alto), dx(dx), dy(dy) {}
 
-	~Base(){}
+	~Base() {}
 	float getX() { return this->x; }
 	float getY() { return this->y; }
 	float getDX() { return this->dx; }
@@ -40,7 +44,7 @@ public:
 	virtual Rectangle rect(Graphics^g) { return Rectangle(); }			//x2
 	void DibujarRectangulo(Graphics^g) { g->DrawRectangle(Pens::Red, rect()); }
 	void DibujarRectangulo2(Graphics^g) { g->DrawRectangle(Pens::Red, rect(g)); }
-	void CoordenadasEnElForm(Graphics^ g, Base *otro){
+	void CoordenadasEnElForm(Graphics^ g, Base *otro) {
 		//Coordenadas en el form
 		float right = g->VisibleClipBounds.Right, bottom = g->VisibleClipBounds.Bottom;
 		posXprint = x + (right*0.5 - (ancho / 2) - otro->getX());
@@ -50,3 +54,11 @@ public:
 		if (posYprint + alto < -1 || posYprint > bottom) return;
 	}
 };
+
+int GenerarRandom(int min, int max) {
+	Random ^r = gcnew Random();
+	int a = r->Next(min, max);
+	System::Threading::Thread::Sleep(10); //para asegurar que el siguiente no saque el mismo numero
+	delete r;
+	return a;
+}

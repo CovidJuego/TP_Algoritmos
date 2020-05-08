@@ -1,98 +1,95 @@
 #pragma once
 #include "Base.h"
-class Enemigo : Base<double,int> {
+
+enum EstadoE	//Estado del Enemigo
+{
+	Patrulla, Alerta, Ninguno
+};
+
+class Enemigo : Base<float, int> {
 private:
-	double speed;
-	int i_x, i_y;
+	EstadoE estado;
+	float speed;
+	int movimientos, salud, MaxSalud;
+	bool alertado;
+
 public:
-	bool arr, aba, izq, der, alerta;
-	Enemigo(Bitmap^ sprite, Graphics ^g, int tipo, int zona) : Base() {
-		//Dimensiones Base
-		if (zona == 1) { x = g->VisibleClipBounds.Left + 10; y = g->VisibleClipBounds.Top + 10; }
-		if (zona == 2) { x = g->VisibleClipBounds.Right - 10; y = g->VisibleClipBounds.Top + 10; }
-		if (zona == 3) { x = g->VisibleClipBounds.Left + 10; y = g->VisibleClipBounds.Bottom - 10; }
-		if (zona == 4) { x = g->VisibleClipBounds.Right - 10; y = g->VisibleClipBounds.Bottom - 10; }
-		ancho = 22;
-		alto = 31;
-		//Dimensiones
+	Enemigo(Bitmap^ sprite, Graphics ^g, int x = 0, int y = 0, int MaxSalud = 3) : Base() {
+		//Coordenadas iniciales
+		this->x = x;
+		this->y = y;
+		//DimensionesIniciales
 		this->newAncho = sprite->Width / 3;
 		this->newAlto = sprite->Height / 4;
-		this->ancho = newAncho;		//ancho del zoom de la imagen
-		this->alto = newAlto;		//alto del zoom de la imagen
+		this->ancho = newAncho * 2;		//ancho del zoom de la imagen
+		this->alto = newAlto * 2;		//alto del zoom de la imagen
 
 		//Movimiento
-		arr = izq = aba = false;
-		der = true;
 		speed = 10;
 
 		//Region inicial del Sprite
-		i_x = 0;
+		i_x = 1;
 		i_y = 2;
 
 		//Estado del enemigo
-		alerta = false;
+		estado = Ninguno;
+		alertado = false;
+
+
+		//Otros ajustes
+		this->MaxSalud = MaxSalud;
+		salud = this->MaxSalud;
+		movimientos = 0;
 	}
 	~Enemigo() {}
 
-	void Update(Graphics ^g, Bitmap^ sprite, int x_personaje, int y_personaje) {
-		Estado(g);
-		Imprimir(g, sprite);
-		Movimiento(g, x_personaje, y_personaje);
+	void Update(Graphics ^g, Bitmap^ sprite, Base *otro,int x_personaje,int y_personaje) {
+		Estado(otro);
+		Movimiento(g,x_personaje,y_personaje);
+		Imprimir(g, sprite, otro);
+		movimientos++;
 	}
+	bool getAlerta() {
+		return alertado;
+	}
+	void Estado(Base *personaje) {
+		if (alertado) return;
+		int dif = 0;	//determina si el personaje esta arriba o abajo o izquierda o derecha del jugador
 
-	void Estado(Graphics ^g) {
-		if (x - abs(g->VisibleClipBounds.Width / 2) < 10 || y - abs(g->VisibleClipBounds.Height / 2) < 10) {
-			alerta = true;
+		if (abs(personaje->getX() - this->x) < 10) {
+			dif = this->y - personaje->getY();
+			if ((this->i_y == 0 && dif > 0) || (this->i_y == 2 && dif < 0)) { //si esta mirando pa arriba y el personaje está arriba o si esta mirando pa abajo y está abajo
+				estado = Alerta; alertado = true;
+				return;
+			}
 		}
+		else if (abs(personaje->getY() - this->y) < 10) {	//lo mismo aca con derecha e izquierda
+			dif = this->x - personaje->getX();
+			if ((this->i_y == 1 && dif < 0) || (this->i_y == 3 && dif > 0)) {
+				estado = Alerta; alertado = true;
+				return;
+			}
+		}
+		estado = Patrulla;
 	}
 
-	void reiniciarDirecciones() {
-		arr = der = izq = aba = false;
-	}
-
-	void Movimiento(Graphics ^g, int x_personaje, int y_personaje) {
-		if (!alerta) {
-			if (izq) {
-				if (x + dx > g->VisibleClipBounds.Left) {
-					this->dx = -speed; this->dy = 0;
-					i_y = 3;
-				}
-				else {
-					izq = false; der = true;
-				}
+	void Movimiento(Graphics ^g,int x_personaje,int y_personaje) {
+		if (!alertado) {
+			if (movimientos % 5 == 0) {	//Cada 5 movimientos se desplaza en X
+				this->dy = 0;
+				do {
+					dx = GenerarRandom(-1, 2) * speed;	//dx = -speed || dx = speed
+				} while (dx == 0);
 			}
-			if (der) {
-				if (x + dx < g->VisibleClipBounds.Right) {
-					this->dx = speed; this->dy = 0;
-					i_y = 1;
-				}
-				else {
-					der = false; izq = true;
-				}
+			if (movimientos % 10 == 0) {	//Cada 10 movimientos se desplaza en Y
+				this->dx = 0;
+				do {
+					dy = GenerarRandom(-1, 2) * speed;	//dy = -speed || dy = speed
+				} while (dy == 0);
 			}
-			if (aba) {
-				if (y + dy < g->VisibleClipBounds.Bottom) {
-					this->dx = 0; this->dy = speed;
-					i_y = 2;
-				}
-				else {
-					aba = false; arr = true;
-				}
-			}
-			if (arr) {
-				if (y + dy > g->VisibleClipBounds.Top) {
-					this->dx = 0; this->dy = -speed;
-					i_y = 0;
-				}
-				else {
-					arr = false; aba = true;
-				}
-			}
-
+			
 		}
 		else {
-			std::cout << "X: " << x_personaje << " Y: " << y_personaje;
-			std::cout << "X: " << x << " Y: " << y;
 			if (x + dx > x_personaje) {
 				this->dx = -speed;
 				i_y = 3;
@@ -110,17 +107,44 @@ public:
 				i_y = 0;
 			}
 		}
+		function<int(int, int)>getNewI_Y = [&](int dx, int dy) {
+			if (dx > 0) { return 1; }
+			if (dx < 0) { return 3; }
+			if (dy > 0) { return 2; }
+			else return 0;
+		};
+		i_y = getNewI_Y(dx, dy);
 		i_x++; i_x %= 3;
 
 		x += dx;
 		y += dy;
 	}
-
-	void Imprimir(Graphics ^g, Bitmap^ Sprite) {
+	void Imprimir(Graphics ^g, Bitmap^ Sprite, Base *otro) {
+		//Coordenadas en el Form
+		CoordenadasEnElForm(g, otro);
+		if (salud < MaxSalud) {
+			g->FillRectangle(Brushes::Red, posXprint, posYprint - 10, 38.0, 6.0);
+			g->FillRectangle(Brushes::Green, posXprint, posYprint - 10, (float)((38 * salud) / MaxSalud), 6.0);
+			g->DrawRectangle(Pens::Black, posXprint, posYprint - 10, 38.0, 6.0);
+		}
+		Rectangle Dibujo = Rectangle(posXprint, posYprint, ancho, alto);
 		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
-		g->DrawImage(Sprite, x * 1.0, y * 1.0, Region, System::Drawing::GraphicsUnit::Pixel);
+		g->DrawImage(Sprite, Dibujo, Region, System::Drawing::GraphicsUnit::Pixel);
 	}
-	Rectangle rect(Graphics^g) {
-		return Rectangle(i_x * ancho, i_y * alto, ancho, alto);
+	bool CheckColision(Base *otro, Graphics^g = nullptr) {
+		if (g != nullptr) {
+			if (this->rect().IntersectsWith(otro->rect(g))) {	//colision con personaje
+				return true;
+			}
+		}
+		else
+			if (this->rect().IntersectsWith(otro->rect())) {	//colision con bala
+				return true;
+			}
+		return false;
 	}
+	void setDaño(int daño) {
+		this->salud -= daño;
+	}
+	int getSalud() { return salud; }
 };

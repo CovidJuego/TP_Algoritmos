@@ -18,6 +18,7 @@ public:
 		CoordenadasEnElForm(g, otro);
 	}
 	bool CheckColision(Base *per) {
+		std::cout << "x: " << per->getX() << " y: " << per->getY() << "\n";
 		if (this->rect().IntersectsWith(per->rect()))
 			return true;
 		return false;

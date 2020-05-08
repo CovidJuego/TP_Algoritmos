@@ -1,47 +1,33 @@
 #pragma once
-#include<list>
-#include<iterator>
-#include<time.h>
 #include "Enemigo.h"
-using namespace System;
+
 class Generador_Enemigos {
 private:
-	list<Enemigo*>lista;
+	list<Enemigo*> *lista;
 public:
 	Generador_Enemigos() {
-		lista = list<Enemigo*>();
+		lista = new list<Enemigo*>();
 	}
-	void Update(Graphics ^g, Bitmap^ sprite, int x_personaje, int y_personaje) {
-		if (lista.size() > 0) {
-			list<Enemigo*>::iterator pos;
-			pos = lista.begin();
-			while (pos != lista.end())
-			{
-				(*pos)->Update(g, sprite, x_personaje, y_personaje);
-				pos++;
-			}
+	~Generador_Enemigos() {
+		delete lista;
+	}
+	void GenerarEnemigos(Bitmap^ sprite, Graphics^ g, int x1, int x2, int y1, int y2, int nEnemigos = -1) {
+		/*if (lista != nullptr) { lista->clear(); }*/
+
+		if (nEnemigos < 0) nEnemigos = GenerarRandom(7, 16);
+		for (int i = 0; i < nEnemigos; ++i) {
+			Enemigo *aux = new Enemigo(sprite, g, GenerarRandom(x1, x2), GenerarRandom(y1, y2));
+			lista->push_back(aux);
 		}
 	}
-
-	void reiniciarDirecciones() {
-		if (lista.size() > 0) {
-			list<Enemigo*>::iterator pos;
-			pos = lista.begin();
-			while (pos != lista.end())
-			{
-				(*pos)->reiniciarDirecciones();
-				pos++;
-			}
-		}
-	}
-
 	bool alerta() {
-		if (lista.size() > 0) {
+		if (lista->size() > 0) {
 			list<Enemigo*>::iterator pos;
-			pos = lista.begin();
-			while (pos != lista.end())
+			pos = lista->begin();
+			while (pos != lista->end())
 			{
-				if((*pos)->alerta == true){
+				if ((*pos)->getAlerta() == true) {
+					std::cout << "Alerta: " << (*pos)->getAlerta() << "\n";
 					return true;
 				}
 				pos++;
@@ -49,45 +35,20 @@ public:
 			return false;
 		}
 	}
-
-	void dir(int direccion) {
-		if (lista.size() > 0) {
-			list<Enemigo*>::iterator pos;
-			pos = lista.begin();
-			while (pos != lista.end())
-			{
-				if (direccion == 1) {
-					(*pos)->arr = true;
+	void Update(Graphics ^g, Bitmap^ sprite, Personaje* personaje, Base<float, int>* bala) {
+		if (lista->size() > 0) {
+			for (Enemigo* e : (*lista)) {
+				if (e->CheckColision(bala)) {	//Colision con bala
+					e->setDaño(1);
 				}
-				if (direccion == 2) {
-					(*pos)->der = true;
+				if (e->CheckColision(personaje, g)) {	//Colision con personaje
+					personaje->setDaño(1);
 				}
-				if (direccion == 3) {
-					(*pos)->aba = true;
+				if (e->getSalud() <= 0) {	//Borrar de la lista si es que ha palmao
+					lista->remove(e);
 				}
-				if (direccion == 4) {
-					(*pos)->izq = true;
-				}
-				pos++;
+				else e->Update(g, sprite, personaje,personaje->getX(),personaje->getY());
 			}
 		}
-	}
-
-	void generar(int cuantos, Bitmap^ sprite, Graphics ^g, int tipo) {
-		if (lista.size() ==  0) {
-			for (int i = 0; i < cuantos; ++i) {
-				std::cout << "Generando..." << "\n";
-				Enemigo *aux;
-				aux = new Enemigo(sprite, g, tipo, i + 1);
-				lista.push_front(aux);
-				std::cout << "Generando2..." << "\n";
-			}
-		}
-	}
-	void aparecer_enemigos(Bitmap^ sprite, Graphics ^g, int tipo) {
-		Random r;
-		srand(time(NULL));
-		int cuantos = r.Next(1, 4);
-		generar(cuantos,sprite,g,tipo);
 	}
 };

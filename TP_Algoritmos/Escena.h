@@ -16,7 +16,7 @@ public:
 		this->x = x; this->y = y;
 		Rectangle Dibujo = Rectangle(0, 0,g->VisibleClipBounds.Right, g->VisibleClipBounds.Bottom);
 		Rectangle Region = Rectangle(x, y, 1100, 495);
-		//g->DrawImage(sprite, Dibujo, Region, GraphicsUnit::Pixel);
+		g->DrawImage(sprite, Dibujo, Region, GraphicsUnit::Pixel);
 	}
 	void ImprimirMiniMapa(Graphics^g, Bitmap^sprite) {
 		Pen^lapiz = gcnew Pen(Color::Black, 2);

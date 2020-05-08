@@ -82,7 +82,6 @@ namespace TPAlgoritmos {
 	private: System::Windows::Forms::Button^  Reanudar_btn;
 	private: System::Windows::Forms::Button^  Guardar_btn;
 	private: System::Windows::Forms::Button^  Salir_btn;
-	private: System::Windows::Forms::Timer^  timer3;
 	private: System::Windows::Forms::Timer^  timer2;
 
 
@@ -106,7 +105,6 @@ namespace TPAlgoritmos {
 				 this->Reanudar_btn = (gcnew System::Windows::Forms::Button());
 				 this->Guardar_btn = (gcnew System::Windows::Forms::Button());
 				 this->Salir_btn = (gcnew System::Windows::Forms::Button());
-				 this->timer3 = (gcnew System::Windows::Forms::Timer(this->components));
 				 (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->axWindowsMediaPlayer1))->BeginInit();
 				 this->Menu_pnl->SuspendLayout();
 				 this->SuspendLayout();
@@ -196,12 +194,6 @@ namespace TPAlgoritmos {
 				 this->Salir_btn->UseVisualStyleBackColor = true;
 				 this->Salir_btn->Click += gcnew System::EventHandler(this, &MyForm::Salir_btn_Click);
 				 // 
-				 // timer3
-				 // 
-				 this->timer3->Enabled = true;
-				 this->timer3->Interval = 10000;
-				 this->timer3->Tick += gcnew System::EventHandler(this, &MyForm::timer3_Tick);
-				 // 
 				 // MyForm
 				 // 
 				 this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -237,11 +229,11 @@ namespace TPAlgoritmos {
 
 				 //Sprites
 				 sprites = gcnew array<Bitmap^>(25);
-				 /*sprites[0] = gcnew Bitmap("ChocolateCity.jpg");*/ sprites[1] = gcnew Bitmap("StephMarlonso.png");
+				 sprites[0] = gcnew Bitmap("ChocolateCity.jpg"); sprites[1] = gcnew Bitmap("StephMarlonso.png");
 				 sprites[2] = gcnew Bitmap("ImagenTemp1.png");	sprites[3] = gcnew Bitmap("ImagenTemp2.png");
 				 sprites[4] = gcnew Bitmap("Moto.png");			sprites[5] = gcnew Bitmap("StephEnMoto.png");
 				 sprites[6] = gcnew Bitmap("Doctor.png");		sprites[7] = gcnew Bitmap("Cono.png");
-				 sprites[8] = gcnew Bitmap("Porra.png");			sprites[9] = gcnew Bitmap("SubFusil.png");
+				 sprites[8] = gcnew Bitmap("Porra.png");		sprites[9] = gcnew Bitmap("SubFusil.png");
 				 sprites[10] = gcnew Bitmap("Pistola.png");		sprites[11] = gcnew Bitmap("Fusil.png");
 				 sprites[12] = gcnew Bitmap("Icono1.png");		sprites[13] = gcnew Bitmap("Icono2.png");
 				 sprites[14] = gcnew Bitmap("Icono3.png");		sprites[15] = gcnew Bitmap("Icono4.png");
@@ -311,8 +303,6 @@ namespace TPAlgoritmos {
 				 timer1->Start();
 			 }
 			 void setItemVisible(String^ s) {
-				 juego->getItem1()->setShow(s == "Circulo");
-				 juego->getItem2()->setShow(s == "Cuadrado");
 				 juego->getItem(0)->setShow(s == "Cono");
 				 juego->getItem(1)->setShow(s == "Porra");
 				 juego->getItem(2)->setShow(s == "SubFusil");
@@ -375,15 +365,7 @@ namespace TPAlgoritmos {
 			juego->getPersonaje()->der = true;
 		}
 		if (e->KeyCode == Keys::E) {
-			if (interaction_txt->Text == "Pulse [E] para obtener Circulo") {
-				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[2], "Circulo");
-				juego->getItem1()->setEstado(Estado::Inventariado);
-			}
-			else if (interaction_txt->Text == "Pulse [E] para obtener Cuadrado") {
-				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[3], "Cuadrado");
-				juego->getItem2()->setEstado(Estado::Inventariado);
-			}
-			else if (interaction_txt->Text == "Pulse [E] para obtener Cono") {
+			if (interaction_txt->Text == "Pulse [E] para obtener Cono") {
 				juego->getPersonaje()->inventary->AgregarItem(inventaryButtons, sprites[12], "Cono");
 				juego->getItem(0)->setEstado(Estado::Inventariado);
 			}
@@ -484,7 +466,7 @@ namespace TPAlgoritmos {
 		menu = false;
 	}
 	private: System::Void Guardar_btn_Click(System::Object^  sender, System::EventArgs^  e) {
-		//Codigo de Stephano
+		juego->GuardarPartida();
 	}
 	private: System::Void Salir_btn_Click(System::Object^  sender, System::EventArgs^  e) {
 		ActivarMenu(false);
@@ -493,8 +475,5 @@ namespace TPAlgoritmos {
 		Menu_pnl->Visible = true;
 		played = false;
 	}
-private: System::Void timer3_Tick(System::Object^  sender, System::EventArgs^  e) {
-	juego->generarEnemigos(sprites[23],g,1);
-}
-};
+	};
 }
