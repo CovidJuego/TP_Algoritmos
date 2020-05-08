@@ -228,7 +228,7 @@ namespace TPAlgoritmos {
 				 buffer = context->Allocate(g, ClientRectangle);
 
 				 //Sprites
-				 sprites = gcnew array<Bitmap^>(25);
+				 sprites = gcnew array<Bitmap^>(26);
 				 sprites[0] = gcnew Bitmap("ChocolateCity.jpg"); sprites[1] = gcnew Bitmap("StephMarlonso.png");
 				 sprites[2] = gcnew Bitmap("ImagenTemp1.png");	sprites[3] = gcnew Bitmap("ImagenTemp2.png");
 				 sprites[4] = gcnew Bitmap("Moto.png");			sprites[5] = gcnew Bitmap("StephEnMoto.png");
@@ -241,7 +241,7 @@ namespace TPAlgoritmos {
 				 sprites[18] = gcnew Bitmap("Virus.png");		sprites[19] = gcnew Bitmap("Quina.png");
 				 sprites[20] = gcnew Bitmap("Icono6.png");		sprites[21] = gcnew Bitmap("Icono7.png");
 				 sprites[22] = gcnew Bitmap("Icono8.png");		sprites[23] = gcnew Bitmap("policia.png");
-				 sprites[24] = gcnew Bitmap("policiaAlerta.png");
+				 sprites[24] = gcnew Bitmap("policiaAlerta.png"); sprites[25] = gcnew Bitmap("Island.png");
 
 				 //Juego
 				 juego = new Juego(buffer->Graphics, sprites, Controls);

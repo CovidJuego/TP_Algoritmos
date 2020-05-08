@@ -35,7 +35,6 @@ public:
 		estado = Ninguno;
 		alertado = false;
 
-
 		//Otros ajustes
 		this->MaxSalud = MaxSalud;
 		salud = this->MaxSalud;
@@ -72,13 +71,14 @@ public:
 	}
 
 	void Movimiento(Graphics ^g) {
-		if (movimientos % 5 == 0) {	//Cada 5 movimientos se desplaza en X
+		int k = GenerarRandom(4, 9);
+		if (movimientos % k == 0) {	//Cada 5 movimientos se desplaza en X
 			this->dy = 0;
 			do {
 				dx = GenerarRandom(-1, 2) * speed;	//dx = -speed || dx = speed
 			} while (dx == 0);
 		}
-		if (movimientos % 10 == 0) {	//Cada 10 movimientos se desplaza en Y
+		if (movimientos % (k*2) == 0) {	//Cada 10 movimientos se desplaza en Y
 			this->dx = 0;
 			do {
 				dy = GenerarRandom(-1, 2) * speed;	//dy = -speed || dy = speed
@@ -100,6 +100,7 @@ public:
 	}
 	void Imprimir(Graphics ^g, Bitmap^ Sprite, Base *otro) {
 		//Coordenadas en el Form
+		if (salud <= 0) return;
 		CoordenadasEnElForm(g, otro);
 		if (salud < MaxSalud) {
 			g->FillRectangle(Brushes::Red, posXprint, posYprint - 10, 38.0, 6.0);
@@ -126,4 +127,5 @@ public:
 		this->salud -= daño;
 	}
 	int getSalud() { return salud; }
+
 };

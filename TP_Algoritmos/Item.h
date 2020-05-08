@@ -10,22 +10,27 @@ class Item : public Base<float, int>
 {
 protected:
 	Estado estado;
-	list<Item*> tirables;	//objetos que tira (el mismo objeto o balas)
+	list<Item*> *tirables;	//objetos que tira (el mismo objeto o balas)
 	float tiempoEntreDisparo, tiempo, velDisparo;
 	bool show, tirado;	//show para mostrar en mano si es que ha sido seleccionado desde el inventario
 	// tirado es auxiliar para el tiempoEntreDisparo
 
 public:
-	Item(Base *otro, int x = 0, int y = 0, float disparo = 0, float velDisparo = 30, int corte = 1, Bitmap^ Sprite = nullptr, Estado e = Tirado) : Base() {
+	Item(Base *otro, int x = 0, int y = 0, float disparo = 0, float velDisparo = 30, int corte = 1, Bitmap^ Sprite = nullptr, Estado e = Tirado, float zoom = -1) : Base() {
 		this->x = x;
 		this->y = y;
 		estado = e;
 		if (Sprite != nullptr) {
 			newAncho = Sprite->Width / corte;
 			newAlto = Sprite->Height;
-
-			ancho = newAncho*0.1;
-			alto = newAlto*0.1;
+			if (zoom < 0) {
+				ancho = newAncho * 0.1;
+				alto = newAlto * 0.1;
+			}
+			else {
+				ancho = newAncho * zoom;
+				alto = newAlto * zoom;
+			}
 		}
 		else {
 			newAncho = newAlto = 30;
@@ -48,15 +53,17 @@ public:
 		this->tiempo = tiempoEntreDisparo;
 		this->velDisparo = velDisparo;
 	}
-	~Item() {}
+	~Item() { delete tirables; }
 	void Update(Graphics ^g, Bitmap^ spriteObjecto, Bitmap^ spriteBala, Base* otro, Control^ control, String^ t, bool noDeFuego = false, bool tirable = false) {
 		Inventariar(otro, control, t, g);
 		if (tirable) Movimiento(g, otro, noDeFuego);	//si es tirable puede hacer animacion
 		else Movimiento(g, otro, false);	//sino, definitivamente no la hace
 		Imprimir(g, spriteObjecto, otro);
-		if (tirables.size() > 0) {
-			UpdateTirables(g, spriteBala, spriteBala, otro, noDeFuego);
-			CheckItemTirable(g);
+		if (estado == Inventariado) {
+			if (tirables->size() > 0) {
+				UpdateTirables(g, spriteBala, spriteBala, otro, noDeFuego);
+				CheckItemTirable(g);
+			}
 		}
 		PuedeTirar();//funcion que va actualizando el tiempo para ver si ya se puede tirar otro Item
 	}
@@ -124,23 +131,23 @@ public:
 			default:
 				break;
 			}
-			tirables.push_back(nuevo);
+			tirables->push_back(nuevo);
 			tirado = true;
 		}
 	}
 	void CheckItemTirable(Graphics^ g) {
-		if (tirables.size() <= 0) return;	//si sale de los limites del form CHAU
-		for (Item *i : tirables) {
+		if (tirables->size() <= 0) return;	//si sale de los limites del form CHAU
+		for (Item *i : *tirables) {
 			if ((i->getPosXPrint() + i->getAncho() < 0 || i->getPosXPrint() > g->VisibleClipBounds.Right) ||
 				(i->getPosYPrint() + i->getAlto() < 0 || i->getPosYPrint() > g->VisibleClipBounds.Bottom)) {
-				tirables.remove(i);
+				tirables->remove(i);
 				break;
 			}
 		}
 	}
 	void UpdateTirables(Graphics^ g, Bitmap^ sprite, Bitmap^ sprite2, Base* otro, bool noDeFuego = false) {
-		if (tirables.size() > 0) {
-			for (Item* i : tirables) {
+		if (tirables->size() > 0) {
+			for (Item* i : *tirables) {
 				i->Update(g, sprite2, sprite, otro, nullptr, nullptr, noDeFuego, true);
 			}
 		}
@@ -158,10 +165,11 @@ public:
 	void setEstado(Estado e) { 
 		estado = e; 
 		if (estado == Inventariado)
-			tirables = list<Item*>();
+			tirables = new list<Item*>();
 	}
 	Estado getEstado() { return estado; }
 	bool getShow() { return show; }
 	float getAncho() { return ancho; }
 	float getAlto() { return alto; }
+	list<Item*>*getTirables() { return tirables; }
 };

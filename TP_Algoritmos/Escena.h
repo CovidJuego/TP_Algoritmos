@@ -8,9 +8,9 @@ private:
 public:
 	Escena() : Base() {}
 	~Escena(){}
-	void Update(Graphics^ g, Bitmap^ sprite, int x, int y) {
-		Imprimir(g, sprite, x, y);
-		/*ImprimirMiniMapa(g, sprite);*/
+	void Update(Graphics^ g, Bitmap^ sprite1, Bitmap^ sprite2, int x, int y) {
+		Imprimir(g, sprite1, x, y);
+		ImprimirMiniMapa(g, sprite2);
 	}
 	void Imprimir(Graphics^g, Bitmap^sprite, int x, int y) {
 		this->x = x; this->y = y;
@@ -21,7 +21,7 @@ public:
 	void ImprimirMiniMapa(Graphics^g, Bitmap^sprite) {
 		Pen^lapiz = gcnew Pen(Color::Black, 2);
 		Rectangle Dibujo = Rectangle(10, 10, 100, 100);
-		Rectangle Region = Rectangle(x, y, 500, 500);
+		Rectangle Region = Rectangle(x/100 + 100, y/100 + 100, 100, 100);
 		g->DrawRectangle(lapiz, 8, 8, 104, 104);
 		g->DrawImage(sprite, Dibujo, Region, GraphicsUnit::Pixel);
 		delete lapiz;

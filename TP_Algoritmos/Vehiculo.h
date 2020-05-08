@@ -85,7 +85,7 @@ public:
 		else {
 			c->Enabled = true;	//Pongo un label que dice Pulse [E] para...
 			c->Text = textSalir;
-			c->Location = Point(g->VisibleClipBounds.Left + 10, g->VisibleClipBounds.Bottom - 30);
+			c->Location = Point(g->VisibleClipBounds.Left + 200, g->VisibleClipBounds.Bottom - 30);
 			return;
 		}
 	}

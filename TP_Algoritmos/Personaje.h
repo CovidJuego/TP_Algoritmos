@@ -8,12 +8,13 @@ class Personaje : public Base<float, int>
 {
 private:
 	float speed;
-	float posItemX, posItemY;
+	float tiempoInvensible;
 	int salud, MaxSalud;
 
 public:
 	//Atributos publicos
 	bool arr, aba, izq, der, enVehiculo, noMoverse;
+	bool invensible;
 	InventaryController *inventary;
 
 	Personaje(Bitmap^ sprite, Control::ControlCollection^ controls, Graphics ^g, int x = 0, int y = 0, int MaxSalud = 5) : Base() { 
@@ -26,8 +27,12 @@ public:
 
 		//Movimiento
 		arr = aba = izq = der = false;	//teclas
-		enVehiculo = noMoverse =	false;	//determinan si NO tiene libertad para moverse
+		enVehiculo = noMoverse = false;	//determinan si NO tiene libertad para moverse
 		speed = 20;
+
+		//Invensibilidad
+		invensible = false;
+		tiempoInvensible = 20;
 
 		//Region inicial del Sprite
 		i_x = 0;
@@ -45,6 +50,7 @@ public:
 		Movimiento(g);
 		ChequearPared(col);
 		Imprimir(g, sprite);
+		puedeSerAtacado();
 	}
 
 	void Movimiento(Graphics ^g) {
@@ -79,6 +85,9 @@ public:
 	}
 
 	void Imprimir(Graphics ^g, Bitmap^ Sprite) {
+		if (salud <= 0) return;
+		posXprint = g->VisibleClipBounds.Right / 2 - (ancho / 2);
+		posYprint = g->VisibleClipBounds.Bottom / 2 - (alto / 2);
 		if (salud < MaxSalud) {
 			g->FillRectangle(Brushes::Red, posXprint, posYprint - 10, 38.0, 6.0);
 			g->FillRectangle(Brushes::Green, posXprint, posYprint - 10, (float)((38 * salud) / MaxSalud), 6.0);
@@ -87,10 +96,19 @@ public:
 		x += dx;
 		y += dy;
 		if (enVehiculo) return;
-		Rectangle Dibujo = Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2), g->VisibleClipBounds.Bottom / 2 - (alto / 2), ancho, alto);
+		Rectangle Dibujo = Rectangle(posXprint, posYprint, ancho, alto);
 		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
 
 		g->DrawImage(Sprite, Dibujo, Region, GraphicsUnit::Pixel);
+	}
+	void puedeSerAtacado() {
+		if (invensible && tiempoInvensible > 0) {
+			tiempoInvensible--;
+		}
+		if (invensible && tiempoInvensible <= 0) {
+			invensible = false;
+			tiempoInvensible = 20;
+		}
 	}
 	Rectangle rect(Graphics^g) {
 		return Rectangle(g->VisibleClipBounds.Right / 2 - (ancho / 2) + this->dx, g->VisibleClipBounds.Bottom / 2 - (alto / 2) + this->dy, ancho, alto);
@@ -101,4 +119,5 @@ public:
 	void setDaño(int daño) {
 		this->salud-=daño;
 	}
+	int getSalud() { return salud; }
 };

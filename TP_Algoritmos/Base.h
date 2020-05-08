@@ -13,6 +13,7 @@ using std::fstream;
 using std::ifstream;
 using std::ofstream;
 using std::function;
+using std::cout;
 
 using namespace System;
 using namespace System::Drawing;
@@ -58,7 +59,7 @@ public:
 int GenerarRandom(int min, int max) {
 	Random ^r = gcnew Random();
 	int a = r->Next(min, max);
-	System::Threading::Thread::Sleep(10); //para asegurar que el siguiente no saque el mismo numero
+	System::Threading::Thread::Sleep(5); //para asegurar que el siguiente no saque el mismo numero
 	delete r;
 	return a;
 }
