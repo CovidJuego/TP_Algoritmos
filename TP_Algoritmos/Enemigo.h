@@ -117,6 +117,7 @@ public:
 		//Coordenadas en el Form
 		if (salud <= 0) return;
 		CoordenadasEnElForm(g, otro);
+
 		if (salud < MaxSalud) {
 			g->FillRectangle(Brushes::Red, posXprint, posYprint - 10, 38.0, 6.0);
 			g->FillRectangle(Brushes::Green, posXprint, posYprint - 10, (float)((38 * salud) / MaxSalud), 6.0);
@@ -125,6 +126,12 @@ public:
 		Rectangle Dibujo = Rectangle(posXprint, posYprint, ancho, alto);
 		Rectangle Region = Rectangle(i_x * newAncho, i_y * newAlto, newAncho, newAlto);
 		g->DrawImage(Sprite, Dibujo, Region, System::Drawing::GraphicsUnit::Pixel);
+	}
+	bool estaLejos(Base *otro) {
+		if (Math::Abs(this->posXprint - otro->getPosXPrint()) > 200 ||
+			Math::Abs(this->posYprint - otro->getPosYPrint()) > 200)
+			return true;
+		return false;
 	}
 	bool CheckColision(Base *otro, Graphics^g = nullptr) {
 		if (g != nullptr) {

@@ -13,7 +13,7 @@ public:
 	}
 	void GenerarEnemigos(Bitmap^ sprite, Graphics^ g, int x1, int x2, int y1, int y2, int nEnemigos = -1) {
 		if (lista->size() > 0) lista->clear();
-		if (nEnemigos < 0) nEnemigos = GenerarRandom(7, 16);
+		if (nEnemigos < 0) nEnemigos = GenerarRandom(4, 9);
 		for (int i = 0; i < nEnemigos; ++i) {
 			Enemigo *aux = new Enemigo(sprite, g, GenerarRandom(x1, x2), GenerarRandom(y1, y2));
 			lista->push_back(aux);
@@ -44,12 +44,12 @@ public:
 				}
 			}
 		}
-		EliminarCaidos();
+		EliminarCaidos(personaje);
 	}
-	void EliminarCaidos() {
+	void EliminarCaidos(Base<float, int> *otro) {
 		if (lista->size() > 0) {
 			for (Enemigo* e : (*lista)) {
-				if (e->getSalud() <= 0) {	//Borrar de la lista si es que ha palmao
+				if ((e->getSalud() <= 0) || e->estaLejos(otro)) {	//Borrar de la lista si es que ha palmao
 					lista->remove(e);
 					break;
 				}

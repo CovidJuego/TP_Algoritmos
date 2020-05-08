@@ -27,6 +27,7 @@ private:
 	Colisiones *colisiones;
 	Dialogo *dialogo;
 	Archivo_Guardado *save;
+	int conversaciones;
 	bool haConversado;	//determina si steph ya ha conversado con el Dock
 	Colision *colisionA, *colisionB, *colisionC;	//colisiones que spawnean a los enemigos
 	bool zonaA, zonaB, zonaC; //determinan si los enemigos de cada zona han sido activados
@@ -34,14 +35,14 @@ private:
 public:
 	Juego(Graphics^g, array<Bitmap^>^sprites, Control::ControlCollection^ Controls){
 		dialogo = new Dialogo();
-		steph = new Personaje(sprites[1], Controls, g, 6900, 700/* 9000, 3700*/);
+		steph = new Personaje(sprites[1], Controls, g, 6900, 700);
 
-		adn = new Item(steph, 11535, 720/*9000, 3800*/, 3950, 10, 1, sprites[17], Tirado, 0.2);
-		counter = new Item(steph, 1845, 8795, /*9000, 3870,*/ 3950, 10, 1, sprites[18], Tirado, 0.2);
-		quina = new Item(steph, 12100, 11485, /*9000, 3920,*/ 3950, 10, 1, sprites[19], Tirado, 0.2);
+		adn = new Item(steph, 11535, 720, 3950, 10, 1, sprites[17], Tirado, 0.2);
+		counter = new Item(steph, 1845, 8795, 3950, 10, 1, sprites[18], Tirado, 0.2);
+		quina = new Item(steph, 12100, 11485, 3950, 10, 1, sprites[19], Tirado, 0.2);
 
-		mapa = new Escena();
-		moto = new Vehiculo(sprites[4], 6800, 750/*, 8900, 3700*/);
+		mapa = new Escena(g);
+		moto = new Vehiculo(sprites[4], 6800, 750);
 		colisiones = new Colisiones();
 		doctor = new Doctor(sprites[6], 9205, 4095);
 		items = new list<Item*>();
@@ -53,6 +54,7 @@ public:
 		save = new Archivo_Guardado();
 		enemigos = new Generador_Enemigos();
 		//Otros
+		conversaciones = 0;
 		haConversado = false;
 		colisionA = new Colision(11500, 1000, 950, 300, true);
 		colisionB = new Colision(12000, 11650, 600, 280, true);
@@ -69,9 +71,9 @@ public:
 		delete items;
 		delete enemigos;
 	}
-	void Update(Graphics^ g, array<Bitmap^>^sprites, Control^ interaction_txt, queue<String^>*dialogos) {
+	void Update(Graphics^ g, array<Bitmap^>^sprites, Control^ interaction_txt, array<String^>^dialogos) {
 
-		mapa->Update(g, sprites[0], sprites[25], steph->getX(), steph->getY());
+		mapa->Update(g, sprites[0], sprites[25], steph->getX(), steph->getY(), doctor, adn, quina, counter);
 		adn->Update(g, sprites[17], sprites[17], steph, interaction_txt, "Pulse [E] para obtener ADN");
 		counter->Update(g, sprites[18], sprites[18], steph, interaction_txt, "Pulse [E] para obtener CounterOmega");
 		quina->Update(g, sprites[19], sprites[19], steph, interaction_txt, "Pulse [E] para obtener Quina");
@@ -104,18 +106,14 @@ public:
 			enemigos->GenerarEnemigos(sprites[23], g, 1480, 2600, 8315, 9215);
 		}
 
-		if (doctor->DetectarColision(steph, g) && (dialogos->size() > 0) && dialogos->front() != " ") {
+		if (doctor->DetectarColision(steph, g) && (conversaciones < dialogos->Length) && dialogos[conversaciones] != " ") {
 			steph->noMoverse = true;
-			dialogo->AbrirConversacion(interaction_txt, dialogos->front(), steph->getX() - 20, steph->getY() + 50);
+			dialogo->AbrirConversacion(interaction_txt, dialogos[conversaciones], steph->getX() - 20, steph->getY() + 50);
 		}
 		else steph->noMoverse = false;
 		
 		dialogo->Animacion(interaction_txt, g, steph);
 		Perdiste(interaction_txt);
-
-		colisionA->DibujarRectangulo(g);
-		colisionB->DibujarRectangulo(g);
-		colisionC->DibujarRectangulo(g);
 
 		Console::SetCursorPosition(0, 0); cout << "                                       ";
 		Console::SetCursorPosition(0, 0); cout << "Personaje: " << steph->getX() << " / " << steph->getY();
@@ -132,12 +130,13 @@ public:
 	Item* getQuina() { return quina; }
 	Vehiculo* getMoto() { return moto; }
 	Dialogo *getDialogo() { return dialogo; }
-	void SiguienteDialogo(Control^c, Graphics^ g, queue<String^>* dialogos) {
+	void SiguienteDialogo(Control^c, Graphics^ g, array<String^>^ dialogos) {
 		dialogo->CerrarConversacion(c, g->VisibleClipBounds.Bottom);
-		if (dialogos->front() != " " && dialogos->size() > 1) {
-			dialogos->pop();
+		if (dialogos[conversaciones] != " " && conversaciones <= dialogos->Length-2) {
+			conversaciones++;
 		}
-		if (dialogos->front() == " ") {
+		if (dialogos[conversaciones] == " ") {
+			if (!haConversado) mapa->CambiarObjetivo();
 			haConversado = true; 
 			if (adn->getEstado() == Inventariado && counter->getEstado() == Inventariado && quina->getEstado() == Inventariado) {
 				c->Enabled = true;
@@ -147,9 +146,10 @@ public:
 			}
 		}
 	}
-	void HabilitarDialogo(queue<String^>* dialogos) {
-		dialogos->pop();
-		haConversado = false;
+	void HabilitarDialogo() {
+			conversaciones++;
+			haConversado = false;
+			mapa->CambiarObjetivo();
 	}
 	void TirarItem(Bitmap^ sprite) {
 		int i = 0;
